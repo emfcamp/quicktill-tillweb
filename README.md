@@ -1,41 +1,53 @@
-Till web service
-================
+EMF Till web service
+====================
 
 Minimal infrastructure needed to bring up an instance of
-quicktill.tillweb as a uwsgi service.
+`quicktill.tillweb` as a uwsgi service.
 
-Setup
------
+This is the EMF-specific fork of the project and contains assumptions
+about how the EMF till is configured. [There is a separate repo for the generic version of the project here.](https://github.com/sde1000/quicktill-tillweb)
 
-To configure, create the following files in the same directory as this README:
+Setup for development
+---------------------
 
- * a random secret in the file `secret_key`
+First install [quicktill](https://github.com/sde1000/quicktill) and
+follow the quick start instructions to create the emfcamp database
+using the 2018 test dataset.
 
- * the name of the till database in the file `database_name`
-
- * the name of the site served by the till in the file `till_name`
-
- * the currency symbol used by the till in the file `currency_symbol`
-
-Create a python3 virtualenv called `venv` and install all the
-requirements from `requirements.txt` in it:
+To configure, create a file `secret_key` containing a random secret, a
+python3 virtualenv called `venv` and install all the requirements from
+`requirements.txt` in it:
 
 ```
-virtualenv --system-site-packages -p python3 venv
+python3 -c "import secrets; print(secrets.token_urlsafe())" >secret_key
+virtualenv -p python3 venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-If you are running tillweb as a developer, you may need to `export
-PYTHONPATH=/path/to/quicktill`.  If you're *only* running tillweb as a
-developer, you can use `--no-site-packages` instead of
-`--system-site-packages`.
+(N.B. this leaves your shell using the venv you have just created. To
+exit the venv, type `deactivate`. To enter the venv again, type
+`source venv/bin/activate`.)
 
-Run `./manage.py migrate` to create the Django database, and
-`./manage.py createsuperuser` to create an initial admin user.
+You will need to `export PYTHONPATH=/path/to/quicktill` to use an
+unpacked copy of the `quicktill` repo. It isn't possible to install
+`quicktill` through `pip` at the moment.
+
+While in the venv, run `./manage.py migrate` to create the Django
+database, and `./manage.py createsuperuser` to create an initial admin
+user.
 
 At this point you should be able to run `./start-testserver` to start
 a webserver on localhost:8000 to test the installation.
+
+Setup for deployment
+--------------------
+
+Similar to setup for development, but specify
+`"--system-site-packages"` to `virtualenv` when creating the venv and
+you may need to sort out dependencies manually when installing
+required packages, if some of the requirements turn out to be older
+than those already installed.
 
 Installation
 ------------
