@@ -1,0 +1,15 @@
+{% comment %}included multiple times from display-on-tap.html{% endcomment %}
+{% for l, pct in lines %}
+<tr>
+	<td>{{ l.stocktype.manufacturer }} {{ l.stocktype.name }}</td>
+	<td>{{ l.stocktype.abv|default_if_none:"–" }}%</td>
+	<td>£{{ l.stocktype.saleprice }}/{{ l.stocktype.unit.name }}</td>
+	{% if pct < 0.1 %}
+		<td>Last few</td>
+	{% elif pct < 0.2 %}
+		<td>Low</td>
+	{% else %}
+		<td>Plenty</td>
+	{% endif %}
+</tr>
+{% endfor %}

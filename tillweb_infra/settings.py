@@ -40,7 +40,6 @@ INSTALLED_APPS = (
     'django_bootstrap_breadcrumbs',
     'widget_tweaks',
     'quicktill.tillweb',
-    'tillmenu',
 )
 
 MIDDLEWARE = (
@@ -142,11 +141,15 @@ MESSAGE_TAGS = {
 from .settings_database import *
 
 # Feature flags
-FOOD_MENU_EDITOR = True
+FOOD_MENU_EDITOR = False
 
 # Currency symbol
 with open(os.path.join(BASE_DIR, "currency_symbol")) as f:
     TILLWEB_MONEY_SYMBOL = f.readline().strip()
+
+# EMF
+
+from .settings_emf import *
 
 # Logging - when running testserver, output SQL queries and responses
 LOGGING = {

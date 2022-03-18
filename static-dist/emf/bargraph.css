@@ -1,0 +1,54 @@
+.bargraph {
+	width: 100%;
+	background-color: #5f1539;
+	height: 2em;
+	border-radius: 10em;
+	overflow: hidden;
+	position: relative;
+}
+
+.screen .bargraph {
+	height: 4em;
+}
+
+.screen .bar span {
+	font-size: 2em;
+}
+
+.bar {
+	background: url( '/static/emf/ltr-light-bar.gif' );
+	background-size: 100%;
+	overflow: hidden;
+	border-radius: 10em;
+	height: inherit;
+	text-align: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.bar.remaining {
+	background: url( '/static/emf/rtl-light-bar.gif' );
+	background-size: 100%;
+}
+
+.bar span {
+	font-size: 1em;
+	line-height: 2;
+	overflow: hidden;
+}
+
+.marker {
+	background: url( '/static/emf/ltr-dark-bar.gif' );
+	background-size: 100%;
+	height: inherit;
+	text-align: center;
+	font-size: 1em;
+	border-right: 0.25em solid white;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.marker.remaining {
+	background: url( '/static/emf/rtl-dark-bar.gif' );
+	background-size: 100%;
+}

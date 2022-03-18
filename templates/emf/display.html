@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{% block title %}EMF 2018{% endblock %}</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		{% block style %}
+			<link rel="STYLESHEET" type="text/css" href="{% static "emf/display.css" %}">
+		{% endblock %}
+		{% block jquery %}
+		{% endblock %}
+	</head>
+	<body>
+		<header>
+			<div>
+				<h1>{% block header %}Header{% endblock %}</h1>
+			</div>
+		</header>
+		<main>{% block content %}{% endblock %}</main>
+	</body>
+</html>

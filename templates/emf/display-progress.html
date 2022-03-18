@@ -1,0 +1,19 @@
+{% extends "emf/display.html" %}
+
+{% block title %}Event Progress{% endblock %}
+
+{% block header %}Progress{% endblock %}
+
+{% block content %}
+
+<div class="screen">
+	{% include "emf/charts.html" %}
+
+	<h2>Time passed</h2>
+	<p>We have been open for {{info.time_passed}} out of {{info.length}}.  That's {{info.completed_pct|stringformat:"0.1f"}}%.</p>
+	<div class="bargraph" style="margin-bottom: 2.5em;">
+		<div class="marker" style="width:{{info.completed_pct}}%;"></div>
+	</div>
+</div>
+
+{% endblock %}

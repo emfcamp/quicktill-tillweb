@@ -1,0 +1,90 @@
+{% extends "emf/base.html" %}
+{% load static %}
+{% block title %}The Robot Arms{% endblock %}
+{% block heading %}
+    <h1>The Robot Arms</h1>
+    {% if info.open %}
+        <div class="status open">
+            <h2>OPEN</h2>
+            <p>Closing at {{ info.closes_at|date:"H:i" }}</p>
+        </h2>
+        {% else %}
+            <div class="status closed">
+                <h2>CLOSED</h2>
+                {% if info.next_open %}
+                    <p>Opening {{ info.next_open|date:"l H:i" }}</p>
+                {% else %}
+                    <p>See you in 2020!</p>
+                {% endif %}
+            </div>
+        {% endif %}
+{% endblock %}
+{% block content %}
+<p class="alert-block"><a href="https://www.emfcamp.org/volunteer/">The Robot Arms is run
+entirely by volunteers!  Want to help out?  Follow this link!</a></p>
+
+
+<div class="split">
+    <div>
+        <h1>Event progress</h1>
+        <div>
+        	{% include "emf/charts.html" %}
+        </div>
+    </div>
+
+    <div>
+        <h1>What's on the bar right now?</h1>
+        {% include 'emf/ales.html' %}
+    </div>
+</div>
+
+<div class="split">
+    <div>
+        <h1>What else does the bar sell?</h1>
+
+        <ul>
+          <li><a href="{% url "display-cans-and-bottles" %}">Cans and bottles</a></li>
+          <li><a href="{% url "display-wines-and-spirits" %}">Wines and spirits</a></li>
+          <li><a href="{% url "display-club-mate" %}">Club Mate</a> and Mate Tea</li>
+          <li><a href="{% url "display-soft-drinks" %}">Soft drinks</a></li>
+        </ul>
+    </div>
+    
+    <div>
+        <h1>What's powering this?</h1>
+
+        <p>The tills are run using free software.</p>
+        <ul>
+          <li><a href="https://github.com/sde1000/quicktill">The till software</a></li>
+          <li><a href="https://github.com/emfcamp/quicktill-tillweb">This web service</a></li>
+          <li><a href="https://www.screenly.io/ose/">The display boards</a> fetch web pages like <a href="/display/on-tap.html">https://bar.emfcamp.org/display/on-tap.html</a></li>
+        </ul>
+
+        <p>Pull requests welcome!  If you improve the web service, your
+        changes may be made live during EMF!</p>
+
+        <p>A simple JSON interface is available:</p>
+        <ul>
+          <li><a href="{% url "locations-json" %}">http://bar.emfcamp.org{% url "locations-json" %}</a>
+          lists the groups of stock that are on sale at the moment</li>
+          <li>http://bar.emfcamp.org/location/[name].json lists stock on sale in a
+          location, for example the <a href="{% url "location-json" "Bar" %}">Bar</a> location</li>
+          <li><a href="{% url "stock-json" %}">http://bar.emfcamp.org{% url "stock-json" %}</a> lists everything we have left in stock.</li>
+          <li><a href="{% url "progress-json" %}">http://bar.emfcamp.org{% url "progress-json" %}</a> compares how much we've actually drunk with what we predicted before the event...</li>
+        </ul>
+    </div>
+</div>
+
+<div>
+  <h3>Links requiring login</h3>
+  <ul>
+    <li>
+      <a href="{% url "tillweb-pubroot" pubname="detail" %}">Till web interface</a>
+    </li>
+    <li>
+      <a href="{% url "refusals" %}">Refusals log</a>
+    </li>
+  </ul>
+</div>
+
+{% endblock %}

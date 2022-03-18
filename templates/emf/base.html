@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}tillweb{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block style %}
+    <link rel="STYLESHEET" type="text/css" href="{% static "emf/style.css" %}">
+{% endblock %}
+{% block jquery %}
+{% endblock %}
+  </head>
+  <body>
+    <header>
+        <div>
+            {% block heading %}Heading{% endblock %}
+            {% if is_paginated %} — page {{ page }} of {{ pages }}{% endif %}
+        </div>
+    </header>
+
+    <nav>
+      {% if user.is_authenticated %}
+      <div id="Userinfo">
+	<p>Logged in as <a href="{% url "user-profile-page" %}">{{ user.get_full_name }}</a>.  <a href="/accounts/logout/">Log out.</a>{% if admin_url and user.is_staff %}<a href="{{admin_url}}">  Edit in admin</a>.{% endif %}{% if user.is_staff %}<a href="{% url "admin:index" %}">  Go to admin.</a>{% endif %}</p>
+      </div>
+      {% endif %}
+
+      {% if nextlink %}
+      <div class="navarrow">
+	<a href="{{nextlink}}"><img src="{% static "right-arrow.svg" %}" width="40" alt="
+Next" />
+      </a></div>
+      {% endif %}
+      {% if prevlink %}
+      <div class="navarrow">
+	<a href="{{prevlink}}"><img src="{% static "left-arrow.svg" %}" width="40" alt="Prev" />
+      </a></div>
+      {% endif %}
+      {% if messages %}
+      <div class="messages" id="messagediv">
+	<ul>
+	  {% for message in messages %}
+	  <li>{{message}}</li>
+	  {% endfor %}
+	</ul>
+      </div>
+      {% endif %}
+    </nav>
+    <div id="Content">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+</html>
