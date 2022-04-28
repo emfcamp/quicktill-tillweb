@@ -14,6 +14,8 @@ from sqlalchemy.orm import undefer, defer, undefer_group
 from sqlalchemy import distinct
 from sqlalchemy import func
 
+from decimal import Decimal
+
 import datetime
 import django.utils.timezone
 
@@ -74,8 +76,8 @@ def booziness(s):
                         (Unit.name == 'bottle', 330.0),
                         ], else_=1.0) * StockItem.size * StockType.abv / 100.0
 
-    used, total = s.query(func.sum(used_fraction * unit_alcohol),
-                          func.sum(unit_alcohol))\
+    used, total = s.query(func.coalesce(func.sum(used_fraction * unit_alcohol), Decimal("0.0")),
+                          func.coalesce(func.sum(unit_alcohol), Decimal("1.0")))\
                    .select_from(StockItem)\
                    .join(StockType)\
                    .join(Unit)\
