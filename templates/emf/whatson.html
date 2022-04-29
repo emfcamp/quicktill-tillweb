@@ -14,7 +14,7 @@
                 {% if info.next_open %}
                     <p>Opening {{ info.next_open|date:"l H:i" }}</p>
                 {% else %}
-                    <p>See you in 2020!</p>
+                    <p>See you next time!</p>
                 {% endif %}
             </div>
         {% endif %}
@@ -57,7 +57,7 @@ entirely by volunteers!  Want to help out?  Follow this link!</a></p>
         <ul>
           <li><a href="https://github.com/sde1000/quicktill">The till software</a></li>
           <li><a href="https://github.com/emfcamp/quicktill-tillweb">This web service</a></li>
-          <li><a href="https://www.screenly.io/ose/">The display boards</a> fetch web pages like <a href="/display/on-tap.html">https://bar.emfcamp.org/display/on-tap.html</a></li>
+          <li><a href="https://github.com/sde1000/till-boot">The display boards</a> boot over the network and fetch web pages like <a href="/display/on-tap.html">https://bar.emfcamp.org/display/on-tap.html</a></li>
         </ul>
 
         <p>Pull requests welcome!  If you improve the web service, your
@@ -65,12 +65,12 @@ entirely by volunteers!  Want to help out?  Follow this link!</a></p>
 
         <p>A simple JSON interface is available:</p>
         <ul>
-          <li><a href="{% url "locations-json" %}">http://bar.emfcamp.org{% url "locations-json" %}</a>
+          <li><a href="{% url "locations-json" %}">https://bar.emfcamp.org{% url "locations-json" %}</a>
           lists the groups of stock that are on sale at the moment</li>
-          <li>http://bar.emfcamp.org/location/[name].json lists stock on sale in a
+          <li>https://bar.emfcamp.org/location/[name].json lists stock on sale in a
           location, for example the <a href="{% url "location-json" "Bar" %}">Bar</a> location</li>
-          <li><a href="{% url "stock-json" %}">http://bar.emfcamp.org{% url "stock-json" %}</a> lists everything we have left in stock.</li>
-          <li><a href="{% url "progress-json" %}">http://bar.emfcamp.org{% url "progress-json" %}</a> compares how much we've actually drunk with what we predicted before the event...</li>
+          <li><a href="{% url "stock-json" %}">https://bar.emfcamp.org{% url "stock-json" %}</a> lists everything we have left in stock.</li>
+          <li><a href="{% url "progress-json" %}">https://bar.emfcamp.org{% url "progress-json" %}</a> compares how much we've actually drunk with what we predicted before the event...</li>
         </ul>
     </div>
 </div>
