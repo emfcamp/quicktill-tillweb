@@ -56,14 +56,23 @@ class EventInfo:
                     (self.now - start) / (end - start))
             elif self.now < start and not self.next_open:
                 self.next_open = start
-        self.completed_fraction = self.time_passed / self.length
-        self.completed_pct = self.completed_fraction * 100.0
-        self.completed_pct_remainder = 100.0 - self.completed_pct
-        self.expected_consumption_fraction = self.expected_consumption \
-                                             / self.total_consumption
-        self.expected_consumption_pct = self.expected_consumption_fraction \
-                                        * 100.0
-        self.expected_consumption_pct_remainder = 100.0 - self.expected_consumption_pct
+        if sessions:
+            self.completed_fraction = self.time_passed / self.length
+            self.completed_pct = self.completed_fraction * 100.0
+            self.completed_pct_remainder = 100.0 - self.completed_pct
+            self.expected_consumption_fraction = self.expected_consumption \
+                / self.total_consumption
+            self.expected_consumption_pct = self.expected_consumption_fraction \
+                * 100.0
+            self.expected_consumption_pct_remainder = 100.0 \
+                - self.expected_consumption_pct
+        else:
+            self.completed_fraction = 0.0
+            self.completed_pct = 0.0
+            self.completed_pct_remainder = 100.0
+            self.expected_consumption_fraction = 0.0
+            self.expected_consumption_pct = 0.0
+            self.expected_consumption_pct_remainder = 100.0
 
 def booziness(s):
     """How much booze have we used?
