@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+class SessionAdmin(admin.ModelAdmin):
+    list_display = ('opening_time', 'closing_time', 'weight', 'comment')
+    list_editable = ('weight', 'comment')
+
+admin.site.register(Session, SessionAdmin)

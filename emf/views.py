@@ -19,11 +19,16 @@ from decimal import Decimal
 import datetime
 import django.utils.timezone
 
+import emf.models
+
+from quicktill.models import *
+
 class EventInfo:
     def __init__(self, override_time=None):
         # Work out how far through the event we are, based on the current
         # time or on the supplied time.
         self.now = override_time or datetime.datetime.now()
+        sessions = emf.models.Session.objects.all()
 
         self.length = datetime.timedelta()
         self.total_consumption = 0.0
@@ -32,8 +37,11 @@ class EventInfo:
         self.open = False
         self.next_open = None
         self.closes_at = None
-        for start, end, weight in settings.EVENT_TIMES:
-            self.length += (end - start)
+        for s in sessions:
+            start = s.opening_time
+            end = s.closing_time
+            weight = s.weight
+            self.length += s.length
             self.total_consumption += weight
             if self.now >= end:
                 # This segment has passed.
@@ -104,8 +112,6 @@ def on_tap(s):
 
     return ales, kegs, ciders
 
-
-from quicktill.models import *
 
 # Monkeypatch the StockType class to have a "total" column so we can
 # easily read total amounts of stuff ordered

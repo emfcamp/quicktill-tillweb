@@ -106,13 +106,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 LANGUAGE_CODE = 'en-GB'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -147,10 +147,6 @@ FOOD_MENU_EDITOR = False
 # Currency symbol
 with open(os.path.join(BASE_DIR, "currency_symbol")) as f:
     TILLWEB_MONEY_SYMBOL = f.readline().strip()
-
-# EMF
-
-from .settings_emf import *
 
 # Logging - when running testserver, output SQL queries and responses
 LOGGING = {
