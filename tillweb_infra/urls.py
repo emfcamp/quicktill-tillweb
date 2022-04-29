@@ -7,6 +7,7 @@ admin.autodiscover()
 admin.site.site_header = "Till administration"
 
 import quicktill.tillweb.urls
+import emf.urls
 
 urlpatterns = [
     path('accounts/', include([
@@ -20,7 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('detail/', include(quicktill.tillweb.urls.tillurls),
          {"pubname": "detail"}),
+    path('', include(emf.urls.urls)),
 ]
-
-from .emfurls import emfurls
-urlpatterns += emfurls
