@@ -8,6 +8,7 @@ urls = [
          name="location-json"),
     path('stock.json', stock_json, name="stock-json"),
     path('progress.json', progress_json, name="progress-json"),
+    path('sessions.json', sessions_json, name="sessions-json"),
     path('refusals/', refusals, name="refusals"),
     path('display/on-tap.html', display_on_tap, name="display-on-tap"),
     path('display/cans-and-bottles.html', display_cans_and_bottles,

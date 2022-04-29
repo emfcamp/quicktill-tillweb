@@ -301,3 +301,11 @@ def progress_json(request):
          'expected_consumption_pct': info.expected_consumption_pct,
          'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
         })
+
+def sessions_json(request):
+    sessions = emf.models.Session.objects.all()
+    return JsonResponse(
+        {'sessions': [
+            { k: getattr(s, k) for k in ('opening_time', 'closing_time') }
+            for s in sessions ],
+        })
