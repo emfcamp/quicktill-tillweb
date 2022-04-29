@@ -23,11 +23,17 @@ import emf.models
 
 from quicktill.models import *
 
+def current_time():
+    # Override this when testing!
+    # return datetime.datetime(2022, 6, 1, 17, 0, 0)
+    return datetime.datetime.now()
+
+
 class EventInfo:
-    def __init__(self, override_time=None):
-        # Work out how far through the event we are, based on the current
-        # time or on the supplied time.
-        self.now = override_time or datetime.datetime.now()
+    def __init__(self, now):
+        # Work out how far through the event we are, based on the
+        # supplied time.
+        self.now = now
         sessions = emf.models.Session.objects.all()
 
         self.length = datetime.timedelta()
@@ -223,7 +229,7 @@ def display_soft_drinks(request):
 def display_progress(request):
     s = settings.TILLWEB_DATABASE()
     alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
-    info = EventInfo()
+    info = EventInfo(current_time())
 
     return render(request, 'emf/display-progress.html',
                   context={
@@ -236,14 +242,13 @@ def display_progress(request):
 def frontpage(request):
     s = settings.TILLWEB_DATABASE()
 
-    # Testing:
-    #info = EventInfo(datetime.datetime(2018, 9, 1, 11, 30))
-    # Production:
-    info = EventInfo()
+    info = EventInfo(current_time())
 
     alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
 
     ales, kegs, ciders = on_tap(s)
+
+    sessions = emf.models.Session.objects.filter(closing_time__gt=current_time())
 
     return render(request, "emf/whatson.html",
                   {"info": info,
@@ -251,6 +256,7 @@ def frontpage(request):
                    "total_alcohol": total_alcohol,
                    "alcohol_used_pct": alcohol_used_pct,
                    "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
+                   "sessions": sessions,
                    "ales": ales,
                    "kegs": kegs,
                    "ciders": ciders,
@@ -294,7 +300,7 @@ def stock_json(request):
 def progress_json(request):
     s = settings.TILLWEB_DATABASE()
     alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
-    info = EventInfo()
+    info = EventInfo(current_time())
 
     return JsonResponse(
         {'licensed_time_pct': info.completed_pct,

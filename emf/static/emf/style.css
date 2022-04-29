@@ -78,6 +78,10 @@ header div div.status h2 {
 	margin: 0 1em;
 }
 
+.split > div.align-bottom {
+	margin-top: auto;
+}
+
 @media screen and ( max-width: 768px ) {
 	.split {
 		display: block;
