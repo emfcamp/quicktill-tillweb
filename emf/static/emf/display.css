@@ -63,3 +63,7 @@ main table tbody tr:nth-child(odd) {
 		background: none;
 	}
 }
+
+#header, #content {
+    transition: opacity 1s ease-in-out;
+}

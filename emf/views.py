@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.template.loader import render_to_string
 
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import subqueryload, subqueryload_all
@@ -156,14 +157,83 @@ def refusals(request):
                            'dtf': dtf,
                   })
 
-def display_on_tap(request):
+def display(request):
+    return render(request, 'emf/display.html')
+
+def display_info(request):
+    pages = [
+        {
+            'name': 'on-tap',
+            'header': "Currently On Tap",
+            'content': display_on_tap,
+            'duration': 5000,
+        },
+        {
+            'name': 'cans-and-bottles',
+            'header': "Cans and Bottles",
+            'content': display_cans_and_bottles,
+            'duration': 5000,
+        },
+        {
+            'name': 'wines-and-spirits',
+            'header': "Wines and Spirits",
+            'content': display_wines_and_spirits,
+            'duration': 5000,
+        },
+        {
+            'name': 'club-mate',
+            'header': "Club Mate",
+            'content': display_club_mate,
+            'duration': 5000,
+        },
+        {
+            'name': 'soft-drinks',
+            'header': "Soft Drinks",
+            'content': display_soft_drinks,
+            'duration': 5000,
+        },
+        {
+            'name': 'progress',
+            'header': "Progress",
+            'content': display_progress,
+            'duration': 5000,
+        },
+        {
+            'name': 'sessions',
+            'header': "Opening Hours",
+            'content': display_sessions,
+            'duration': 5000,
+        },
+    ]
+
+    current = request.GET.get("current", "start")
+
+    page = None
+    for pn, p in enumerate(pages):
+        if p['name'] == current:
+            try:
+                page = pages[pn + 1]
+            except IndexError:
+                pass
+            break
+
+    if not page:
+        page = pages[0]
+
+    if callable(page['content']):
+        page['content'] = page['content']()
+
+    return JsonResponse(page)
+
+def display_on_tap():
     s = settings.TILLWEB_DATABASE()
     ales, kegs, ciders = on_tap(s)
 
-    return render(request, 'emf/display-on-tap.html',
-                  context={'ales': ales, 'kegs': kegs, 'ciders': ciders})
+    return render_to_string(
+        'emf/display-on-tap.html',
+        context={'ales': ales, 'kegs': kegs, 'ciders': ciders})
 
-def display_cans_and_bottles(request):
+def display_cans_and_bottles():
     s = settings.TILLWEB_DATABASE()
     # We want all stocktypes with unit 'can' or unit 'bottle', but only
     # if there are >0 qty remaining
@@ -176,10 +246,10 @@ def display_cans_and_bottles(request):
         .order_by(StockType.manufacturer, StockType.name)\
         .all()
 
-    return render(request, 'emf/display-cans-and-bottles.html',
-                  context={'types': r})
+    return render_to_string('emf/display-cans-and-bottles.html',
+                            context={'types': r})
 
-def display_wines_and_spirits(request):
+def display_wines_and_spirits():
     s = settings.TILLWEB_DATABASE()
     wines = s.query(StockLine,
                     func.round(StockType.saleprice / (750/125), 1),
@@ -200,10 +270,11 @@ def display_wines_and_spirits(request):
                .order_by(StockType.manufacturer, StockType.name)\
                .all()
 
-    return render(request, 'emf/display-wines-and-spirits.html',
-                  context={'wines': wines, 'spirits': spirits})
+    return render_to_string(
+        'emf/display-wines-and-spirits.html',
+        context={'wines': wines, 'spirits': spirits})
 
-def display_club_mate(request):
+def display_club_mate():
     s = settings.TILLWEB_DATABASE()
     mate = s.query(StockType, StockType.remaining, StockType.total,
                    StockType.remaining / StockType.total * 100.0)\
@@ -211,10 +282,11 @@ def display_club_mate(request):
             .order_by(desc(StockType.name))\
             .all()
 
-    return render(request, 'emf/display-club-mate.html',
-                  context={'mate': mate})
+    return render_to_string(
+        'emf/display-club-mate.html',
+        context={'mate': mate})
 
-def display_soft_drinks(request):
+def display_soft_drinks():
     s = settings.TILLWEB_DATABASE()
     soft = s.query(StockType, StockType.remaining / StockType.total * 100.0)\
             .filter(StockType.dept_id == 7)\
@@ -223,21 +295,32 @@ def display_soft_drinks(request):
         .order_by(StockType.manufacturer, StockType.name)\
         .all()
 
-    return render(request, 'emf/display-soft-drinks.html',
-                  context={'soft': soft})
+    return render_to_string(
+        'emf/display-soft-drinks.html',
+        context={'soft': soft})
 
-def display_progress(request):
+def display_progress():
     s = settings.TILLWEB_DATABASE()
     alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
     info = EventInfo(current_time())
 
-    return render(request, 'emf/display-progress.html',
-                  context={
-                      'info': info, 'alcohol_used': alcohol_used,
-                      'total_alcohol': total_alcohol,
-                      'alcohol_used_pct': alcohol_used_pct,
-                      'alcohol_used_pct_remainder': 100.0 - alcohol_used_pct,
-                  })
+    return render_to_string(
+        'emf/display-progress.html',
+        context={
+            'info': info, 'alcohol_used': alcohol_used,
+            'total_alcohol': total_alcohol,
+            'alcohol_used_pct': alcohol_used_pct,
+            'alcohol_used_pct_remainder': 100.0 - alcohol_used_pct,
+        })
+
+def display_sessions():
+    sessions = emf.models.Session.objects.filter(closing_time__gt=current_time())
+
+    return render_to_string(
+        'emf/display-sessions.html',
+        context={
+            'sessions': sessions,
+        })
 
 def frontpage(request):
     s = settings.TILLWEB_DATABASE()

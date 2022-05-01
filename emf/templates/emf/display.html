@@ -1,21 +1,18 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>{% block title %}EMF 2022{% endblock %}</title>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-		{% block style %}
-			<link rel="STYLESHEET" type="text/css" href="{% static "emf/display.css" %}">
-		{% endblock %}
-		{% block jquery %}
-		{% endblock %}
-	</head>
-	<body>
-		<header>
-			<div>
-				<h1>{% block header %}Header{% endblock %}</h1>
-			</div>
-		</header>
-		<main>{% block content %}{% endblock %}</main>
-	</body>
+  <head>
+    <title>{% block title %}EMF 2022{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link rel="STYLESHEET" type="text/css" href="{% static "emf/display.css" %}">
+    <script type="module" src="{% static "emf/display.js" %}"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+	<h1 id="header">EMF Bar Information</h1>
+      </div>
+    </header>
+    <main id="content">Loading...</main>
+  </body>
 </html>

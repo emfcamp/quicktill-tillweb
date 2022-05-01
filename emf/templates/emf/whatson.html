@@ -44,12 +44,17 @@
     <div>
         <h1>What else does the bar sell?</h1>
 
+	<p>We used to have a list of display pages here, but that
+	  doesn't work any more. We should have some mobile-friendly
+	  pages instead.</p>
+	{% comment %}
         <ul>
           <li><a href="{% url "display-cans-and-bottles" %}">Cans and bottles</a></li>
           <li><a href="{% url "display-wines-and-spirits" %}">Wines and spirits</a></li>
           <li><a href="{% url "display-club-mate" %}">Club Mate</a> and Mate Tea</li>
           <li><a href="{% url "display-soft-drinks" %}">Soft drinks</a></li>
         </ul>
+	{% endcomment %}
     </div>
 
     <div>
@@ -74,7 +79,7 @@
         <ul>
           <li><a href="https://github.com/sde1000/quicktill">The till software</a></li>
           <li><a href="https://github.com/emfcamp/quicktill-tillweb">This web service</a></li>
-          <li><a href="https://github.com/sde1000/till-boot">The display boards</a> boot over the network and fetch web pages like <a href="/display/on-tap.html">https://bar.emfcamp.org/display/on-tap.html</a></li>
+          <li><a href="https://github.com/sde1000/till-boot">The display boards</a> boot over the network and fetch <a href="{% url "display" %}">https://bar.emfcamp.org/display/</a></li>
         </ul>
 
         <p>Pull requests welcome!  If you improve the web service, your
