@@ -4,6 +4,7 @@
 *.pyc
 __pycache__
 /static/
+/media/
 /tillweb.pid
 /db.sqlite3
 /uwsgi.log

@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SITE_ID = 1
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -34,11 +36,14 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
     'django_bootstrap_breadcrumbs',
     'widget_tweaks',
+    'photologue',
+    'sortedm2m',
     'quicktill.tillweb',
     'emf',
 )
@@ -122,6 +127,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static-dist"),
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/accounts/users/%d/" % o.id,

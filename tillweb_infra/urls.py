@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
@@ -6,6 +7,7 @@ from tillweb_infra import views
 admin.autodiscover()
 admin.site.site_header = "Till administration"
 
+import photologue.urls
 import quicktill.tillweb.urls
 import emf.urls
 
@@ -21,5 +23,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('detail/', include(quicktill.tillweb.urls.tillurls),
          {"pubname": "detail"}),
-    path('', include(emf.urls.urls)),
+    path('photos/', include(photologue.urls, namespace='photologue')),
 ]
+
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns.append(path('', include(emf.urls.urls)))

@@ -20,6 +20,10 @@ server {
 		root /home/till/tillweb;
 	}
 
+	location /media {
+		root /home/till/tillweb;
+	}
+
 	location @django {
 		include uwsgi_params;
 		uwsgi_pass localhost:3861;
