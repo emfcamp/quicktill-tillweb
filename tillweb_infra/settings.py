@@ -41,11 +41,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
     'django_bootstrap_breadcrumbs',
+    'sorl.thumbnail',
     'widget_tweaks',
+    'markup',
     'photologue',
     'sortedm2m',
     'quicktill.tillweb',
-    'emf',
+    'emf.apps.EmfConfig',
 )
 
 MIDDLEWARE = (
@@ -56,6 +58,7 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'emf.middleware.PagesFallbackMiddleware',
 )
 
 ROOT_URLCONF = 'tillweb_infra.urls'
@@ -144,6 +147,10 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+THUMBNAIL_PREFIX = 'thumbnails/'
+THUMBNAIL_PRESERVE_FORMAT = True
+THUMBNAIL_ALTERNATIVE_RESOLUTIONS = [1.5, 2]
 
 # Till database access
 
