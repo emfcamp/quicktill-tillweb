@@ -3,40 +3,39 @@
 
 const header = document.getElementById("header");
 const content = document.getElementById("content");
+const clock = document.getElementById("clock");
 const fadeTime = 1000; /* Should match the CSS */
 const waitTime = 500; /* How long to wait with blank page? */
 const recoverTime = 5000; /* How long to wait after network error? */
-const defaultHeader = "EMF Bar Information";
-const defaultContent = "Missing content";
+const defaultHeader = header.innerText;
+const defaultContent = content.innerHTML;
 const defaultDisplayTime = 10000;
-
-function show() {
-    header.style.opacity = "1";
-    content.style.opacity = "1";
-}
-
-function hide() {
-    header.style.opacity = "0";
-    content.style.opacity = "0";
-}
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/* In a loop, we want to:
- *  * fetch from /display/info.json
- *  * hide() the current display
- *  * set header and content
- *  * show() the new display
- *  * delay specified time (or default)
- *  * repeat from start
- */
-
+/* Main display loop */
 (async () => {
+    var current_header = header.innerText;
+    var current_content = content.innerHTML;
     var current = "start";
-    var displayOK = true;
-    await sleep(waitTime);
+
+    async function display(new_header, new_content) {
+	if (new_header != current_header || new_content != current_content) {
+	    header.style.opacity = "0";
+	    content.style.opacity = "0";
+	    await sleep(fadeTime + waitTime);
+	    header.innerText = new_header;
+	    content.innerHTML = new_content;
+	    current_header = new_header;
+	    current_content = new_content;
+	    header.style.opacity = "1";
+	    content.style.opacity = "1";
+	    await sleep(fadeTime);
+	}
+    }
+
     while (true) {
 	var res;
 	var json;
@@ -44,14 +43,7 @@ function sleep(ms) {
 	    res = await fetch('/display/info.json?current=' + current);
 	} catch (error) {
 	    console.error(error);
-	    if (displayOK) {
-		displayOK = false;
-		hide();
-		await sleep(fadeTime + waitTime);
-		header.innerText = "EMF Bar Information";
-		content.innerText = "Network error; retrying...";
-		show();
-	    }
+	    await display(defaultHeader, "Network error; retrying...");
 	    await sleep(recoverTime);
 	    continue;
 	}
@@ -59,25 +51,28 @@ function sleep(ms) {
 	    json = await res.json();
 	} catch (error) {
 	    console.error(error);
-	    if (displayOK) {
-		displayOK = false;
-		hide();
-		await sleep(fadeTime + waitTime);
-		header.innerText = "EMF Bar Information";
-		content.innerText = "Didn't receive JSON; retrying...";
-		show();
-		current = "start";
-	    }
+	    await display(defaultHeader, "Didn't receive JSON; retrying...");
 	    await sleep(recoverTime);
 	    continue;
 	}
-	hide();
-	await sleep(fadeTime + waitTime);
-	header.innerText = json.header || defaultHeader;
-	content.innerHTML = json.content || defaultContent;
+	await display(json.header || defaultHeader,
+		      json.content || defaultContent);
 	current = json.name;
-	displayOK = true;
-	show();
-	await sleep(fadeTime + (json.duration || defaultDisplayTime));
+	await sleep(json.duration || defaultDisplayTime);
+    }
+})();
+
+/* Clock loop */
+(async () => {
+    while (true) {
+	const date = new Date();
+	const h = date.getHours().toString().padStart(2, '0');
+	const m = date.getMinutes().toString().padStart(2, '0');
+	const s = date.getSeconds();
+
+	clock.innerText = h + ':' + m;
+
+	/* We want to wait until just after the minute ticks over */
+	await sleep((60 - s) * 1000);
     }
 })();
