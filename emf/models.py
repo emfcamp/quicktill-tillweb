@@ -61,3 +61,55 @@ class Page(models.Model):
 
     def __str__(self):
         return f"{self.path}/{self.title}"
+
+
+class DisplayPage(models.Model):
+    """A page for the display boards
+    """
+    name = models.CharField(
+        max_length=80, unique=True,
+        help_text="Internal name for the display. If multiple pages of "
+        "the same priority are being displayed, they will be shown in "
+        "alphanumeric order by name.")
+    display_after = models.DateTimeField(
+        blank=True, null=True, help_text="Don't display this page until "
+        "after this time")
+    display_until = models.DateTimeField(
+        blank=True, null=True, help_text="Stop displaying this page after "
+        "this time")
+    display_time = models.IntegerField(
+        default=30, help_text="Display the page for this number of seconds")
+    PRIORITY_CHOICES = (
+        ('U', 'Urgent'),
+        ('N', 'Normal'),
+        ('L', 'Low'),
+    )
+    priority = models.CharField(
+        max_length=1, choices=PRIORITY_CHOICES,
+        help_text="Priority for this page. Urgent pages suppress the display "
+        "of all other pages; normal pages appear first in the list of pages, "
+        "low priority pages appear last in the list.")
+    title = models.CharField(
+        max_length=80, blank=True,
+        help_text="Title to be shown at the top of the display, between "
+        "the logo and the clock")
+    content = models.TextField(
+        help_text="Content for the page. Markdown or HTML.")
+
+    def __str__(self):
+        return self.name
+
+    def render_content(self):
+        return mark_safe(
+            markdown_module.markdown(
+                self.content,
+                extensions=["markup.mdx_plimg:PLImgExtension",
+                            "def_list"]))
+
+    def as_dict(self):
+        return {
+            'name' : self.name,
+            'header': self.title,
+            'content': self.render_content,
+            'duration': self.display_time,
+        }

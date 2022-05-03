@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -161,67 +162,74 @@ def display(request):
     return render(request, 'emf/display.html')
 
 def display_info(request):
-    pages = [
-        {
-            'name': 'on-tap',
-            'header': "Currently On Tap",
-            'content': display_on_tap,
-            'duration': 5000,
-        },
-        {
-            'name': 'cans-and-bottles',
-            'header': "Cans and Bottles",
-            'content': display_cans_and_bottles,
-            'duration': 5000,
-        },
-        {
-            'name': 'wines-and-spirits',
-            'header': "Wines and Spirits",
-            'content': display_wines_and_spirits,
-            'duration': 5000,
-        },
-        {
-            'name': 'club-mate',
-            'header': "Club Mate",
-            'content': display_club_mate,
-            'duration': 5000,
-        },
-        {
-            'name': 'soft-drinks',
-            'header': "Soft Drinks",
-            'content': display_soft_drinks,
-            'duration': 5000,
-        },
-        {
-            'name': 'progress',
-            'header': "Progress",
-            'content': display_progress,
-            'duration': 5000,
-        },
-        {
-            'name': 'sessions',
-            'header': "Opening Hours",
-            'content': display_sessions,
-            'duration': 5000,
-        },
-    ]
+    now = current_time()
+
+    # Fetch current messages
+    messages = emf.models.DisplayPage.objects.filter(
+        Q(display_after=None) | Q(display_after__lt=now),
+        Q(display_until=None) | Q(display_until__gt=now)).all()
+
+    urgent = [ m for m in messages if m.priority == 'U' ]
+    normal = [ m for m in messages if m.priority == 'N' ]
+    low = [ m for m in messages if m.priority == 'L' ]
+
+    if urgent:
+        # The only pages are urgent pages
+        pages = [ m.as_dict() for m in urgent ]
+    else:
+        # We show normal, default and low priority pages
+
+        # Work out whether we are open
+        sessions = emf.models.Session.objects.filter(
+            closing_time__gt=now)
+        currently_open = False
+        for s in sessions:
+            if s.opening_time < now:
+                currently_open = True
+
+        if currently_open:
+            pages = default_pages()
+        else:
+            pages = [
+                {
+                    'name': 'sessions',
+                    'header': "Opening Hours",
+                    'content': display_sessions,
+                    'duration': 30,
+                },
+            ]
+
+        # Append low-priority pages
+        for m in low:
+            pages.append(m.as_dict())
+
+        # If there are any normal-priority pages, rename all
+        # the default and low-priority pages so that the normal-priority
+        # pages get displayed first
+        if normal:
+            for p in pages:
+                p['name'] = f"zz-{p['name']}"
+            pages = [ m.as_dict() for m in normal ] + pages
 
     current = request.GET.get("current", "start")
 
-    page = None
+    pagenum = 0
     for pn, p in enumerate(pages):
         if p['name'] == current:
-            try:
-                page = pages[pn + 1]
-            except IndexError:
-                pass
+            pagenum = pn + 1
             break
 
-    if not page:
-        page = pages[0]
+    if pagenum >= len(pages):
+        pagenum = 0
+
+    page = pages[pagenum]
+    page['page'] = f"Page {pagenum + 1} of {len(pages)}" \
+        if len(pages) > 1 else ""
 
     if callable(page['content']):
         page['content'] = page['content']()
+
+    page['duration'] = 5000 if settings.DEBUG else page['duration'] * 1000
 
     return JsonResponse(page)
 
@@ -321,6 +329,46 @@ def display_sessions():
         context={
             'sessions': sessions,
         })
+
+def default_pages():
+    return [
+        {
+            'name': 'on-tap',
+            'header': "Currently On Tap",
+            'content': display_on_tap,
+            'duration': 30,
+        },
+        {
+            'name': 'cans-and-bottles',
+            'header': "Cans and Bottles",
+            'content': display_cans_and_bottles,
+            'duration': 30,
+        },
+        {
+            'name': 'wines-and-spirits',
+            'header': "Wines and Spirits",
+            'content': display_wines_and_spirits,
+            'duration': 30,
+        },
+        {
+            'name': 'club-mate',
+            'header': "Club Mate",
+            'content': display_club_mate,
+            'duration': 20,
+        },
+        {
+            'name': 'soft-drinks',
+            'header': "Soft Drinks",
+            'content': display_soft_drinks,
+            'duration': 20,
+        },
+        {
+            'name': 'progress',
+            'header': "Progress",
+            'content': display_progress,
+            'duration': 20,
+        },
+    ]
 
 def frontpage(request):
     s = settings.TILLWEB_DATABASE()

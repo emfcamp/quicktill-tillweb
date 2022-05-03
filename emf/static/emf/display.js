@@ -4,6 +4,7 @@
 const header = document.getElementById("header");
 const content = document.getElementById("content");
 const clock = document.getElementById("clock");
+const page = document.getElementById("page");
 const fadeTime = 1000; /* Should match the CSS */
 const waitTime = 500; /* How long to wait with blank page? */
 const recoverTime = 5000; /* How long to wait after network error? */
@@ -21,17 +22,20 @@ function sleep(ms) {
     var current_content = content.innerHTML;
     var current = "start";
 
-    async function display(new_header, new_content) {
+    async function display(new_header, new_content, new_page) {
 	if (new_header != current_header || new_content != current_content) {
 	    header.style.opacity = "0";
 	    content.style.opacity = "0";
+	    page.style.opacity = "0";
 	    await sleep(fadeTime + waitTime);
 	    header.innerText = new_header;
 	    content.innerHTML = new_content;
+	    page.innerText = new_page;
 	    current_header = new_header;
 	    current_content = new_content;
 	    header.style.opacity = "1";
 	    content.style.opacity = "1";
+	    page.style.opacity = "1";
 	    await sleep(fadeTime);
 	}
     }
@@ -43,7 +47,7 @@ function sleep(ms) {
 	    res = await fetch('/display/info.json?current=' + current);
 	} catch (error) {
 	    console.error(error);
-	    await display(defaultHeader, "Network error; retrying...");
+	    await display(defaultHeader, "Network error; retrying...", "");
 	    await sleep(recoverTime);
 	    continue;
 	}
@@ -51,12 +55,13 @@ function sleep(ms) {
 	    json = await res.json();
 	} catch (error) {
 	    console.error(error);
-	    await display(defaultHeader, "Didn't receive JSON; retrying...");
+	    await display(defaultHeader, "Didn't receive JSON; retrying...", "");
 	    await sleep(recoverTime);
 	    continue;
 	}
 	await display(json.header || defaultHeader,
-		      json.content || defaultContent);
+		      json.content || defaultContent,
+		      json.page || "");
 	current = json.name;
 	await sleep(json.duration || defaultDisplayTime);
     }
