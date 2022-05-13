@@ -28,6 +28,7 @@ def update_img_tag(t):
     size = "400x300"
     options = {}
     link = True
+    center = False
     for p in s[1:]:
         if p.startswith("size-"):
             size = p[5:]
@@ -50,6 +51,8 @@ def update_img_tag(t):
             options["padding_color"] = p[15:]
         elif p == "nolink":
             link = False
+        elif p == "center":
+            center = True
         else:
             imgclass.append(p)
     im = get_thumbnail(photo.image, size, **options)
@@ -62,12 +65,20 @@ def update_img_tag(t):
     if photo.is_public and link:
         # Replace the IMG element with an "A" element linking to the
         # photo page, with the IMG element as a child.
-        newimg = deepcopy(t)
-        newimg.text = None
-        newimg.tail = None
+        img = deepcopy(t)
+        t.clear()
         t.tag = "a"
-        t.attrib = {'href': photo.get_absolute_url()}
-        t.append(newimg)
+        t.set('href', photo.get_absolute_url())
+        t.append(img)
+    if center:
+        # Replace the element with a "DIV" element, with the element
+        # as a child
+        img = deepcopy(t)
+        t.clear()
+        t.tag = "div"
+        t.set("class", "center")
+        t.append(img)
+
 
 def find_img_tags(element):
     for child in element:

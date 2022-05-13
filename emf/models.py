@@ -3,6 +3,9 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import markdown as markdown_module
 from django.utils.safestring import mark_safe
+from django.urls import reverse
+from django.conf import settings
+from .display import displays
 
 
 # XXX be careful to refer to this explicitly, otherwise you might get
@@ -66,11 +69,26 @@ class Page(models.Model):
 class DisplayPage(models.Model):
     """A page for the display boards
     """
-    name = models.CharField(
+    slug = models.SlugField(
         max_length=80, unique=True,
-        help_text="Internal name for the display. If multiple pages of "
-        "the same priority are being displayed, they will be shown in "
-        "alphanumeric order by name.")
+        help_text="Internal name for the page. If multiple pages of "
+        "the same order and priority are being displayed, they will be "
+        "shown in alphanumeric order by name.")
+    order = models.IntegerField(
+        default=1000, help_text="Hint for ordering of pages in the carousel")
+
+    # Conditions for display as part of the carousel
+    enabled = models.BooleanField(
+        default=False,
+        help_text="Include this page in the carousel?")
+    CONDITION_CHOICES = (
+        ('A', 'Always'),
+        ('O', 'Only when open'),
+        ('C', 'Only when closed'),
+    )
+    condition = models.CharField(
+        max_length=1, choices=CONDITION_CHOICES, default='A',
+        help_text="When should this page be displayed?")
     display_after = models.DateTimeField(
         blank=True, null=True, help_text="Don't display this page until "
         "after this time")
@@ -82,24 +100,43 @@ class DisplayPage(models.Model):
     PRIORITY_CHOICES = (
         ('U', 'Urgent'),
         ('N', 'Normal'),
-        ('L', 'Low'),
     )
     priority = models.CharField(
-        max_length=1, choices=PRIORITY_CHOICES,
+        max_length=1, choices=PRIORITY_CHOICES, default='N', blank=False,
         help_text="Priority for this page. Urgent pages suppress the display "
-        "of all other pages; normal pages appear first in the list of pages, "
-        "low priority pages appear last in the list.")
+        "of all other non-urgent pages.")
+
+    # Content for the page
     title = models.CharField(
         max_length=80, blank=True,
         help_text="Title to be shown at the top of the display, between "
         "the logo and the clock")
+
+    TEMPLATE_CHOICES = tuple(
+        (k, v.description) for k, v in displays.items())
+    template = models.CharField(
+        max_length=80, blank=True,
+        choices=TEMPLATE_CHOICES,
+        help_text="Programmed template for the page")
     content = models.TextField(
-        help_text="Content for the page. Markdown or HTML.")
+        blank=True,
+        help_text="Content for the page if no template is chosen. "
+        "Markdown or HTML")
+
+    class Meta:
+        ordering = ('order', 'slug')
 
     def __str__(self):
-        return self.name
+        return self.slug
+
+    def get_absolute_url(self):
+        return reverse('display-page', args=[self.slug])
 
     def render_content(self):
+        if self.template:
+            cls = displays[self.template]
+            return cls(settings.TILLWEB_DATABASE()).text
+
         return mark_safe(
             markdown_module.markdown(
                 self.content,
@@ -108,7 +145,7 @@ class DisplayPage(models.Model):
 
     def as_dict(self):
         return {
-            'name' : self.name,
+            'name' : self.slug,
             'header': self.title,
             'content': self.render_content,
             'duration': self.display_time,

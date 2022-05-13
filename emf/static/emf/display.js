@@ -20,23 +20,30 @@ function sleep(ms) {
 (async () => {
     var current_header = header.innerText;
     var current_content = content.innerHTML;
+    var current_page = page.innerText;
     var current = "start";
 
-    async function display(new_header, new_content, new_page) {
-	if (new_header != current_header || new_content != current_content) {
-	    header.style.opacity = "0";
-	    content.style.opacity = "0";
-	    page.style.opacity = "0";
-	    await sleep(fadeTime + waitTime);
+    async function display(new_header, new_content, new_page, fade) {
+	if (new_header != current_header || new_content != current_content ||
+	    new_page != current_page) {
+	    if (fade) {
+		header.style.opacity = "0";
+		content.style.opacity = "0";
+		page.style.opacity = "0";
+		await sleep(fadeTime + waitTime);
+	    }
 	    header.innerText = new_header;
 	    content.innerHTML = new_content;
 	    page.innerText = new_page;
 	    current_header = new_header;
 	    current_content = new_content;
-	    header.style.opacity = "1";
-	    content.style.opacity = "1";
-	    page.style.opacity = "1";
-	    await sleep(fadeTime);
+	    current_page = new_page;
+	    if (fade) {
+		header.style.opacity = "1";
+		content.style.opacity = "1";
+		page.style.opacity = "1";
+		await sleep(fadeTime);
+	    }
 	}
     }
 
@@ -44,10 +51,11 @@ function sleep(ms) {
 	var res;
 	var json;
 	try {
-	    res = await fetch('/display/info.json?current=' + current);
+	    res = await fetch('info.json?current=' + current);
 	} catch (error) {
 	    console.error(error);
-	    await display(defaultHeader, "Network error; retrying...", "");
+	    await display(defaultHeader, "Network error; retrying...", "", true);
+	    current = "retry-network";
 	    await sleep(recoverTime);
 	    continue;
 	}
@@ -55,13 +63,15 @@ function sleep(ms) {
 	    json = await res.json();
 	} catch (error) {
 	    console.error(error);
-	    await display(defaultHeader, "Didn't receive JSON; retrying...", "");
+	    await display(defaultHeader, "Didn't receive JSON; retrying...", "", true);
+	    current = "retry-json";
 	    await sleep(recoverTime);
 	    continue;
 	}
 	await display(json.header || defaultHeader,
 		      json.content || defaultContent,
-		      json.page || "");
+		      json.page || "",
+		      json.name != current);
 	current = json.name;
 	await sleep(json.duration || defaultDisplayTime);
     }

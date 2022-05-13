@@ -13,7 +13,8 @@ class PageAdmin(admin.ModelAdmin):
 admin.site.register(Page, PageAdmin)
 
 class DisplayPageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'display_after', 'display_until', 'title')
+    list_display = ('slug', 'order', 'enabled', 'condition', 'display_after', 'display_until', 'title')
     list_filter = ('priority', )
+    list_editable = ('order', 'enabled', 'condition', 'display_after', 'display_until', 'title')
 
 admin.site.register(DisplayPage, DisplayPageAdmin)

@@ -12,4 +12,7 @@ urls = [
     path('refusals/', refusals, name="refusals"),
     path('display/', display, name="display"),
     path('display/info.json', display_info, name="display-info"),
+    path('display/<page>/', display, name="display-page"),
+    path('display/<page>/info.json', display_page_info,
+         name="display-page-info"),
 ]
