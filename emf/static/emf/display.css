@@ -2,48 +2,113 @@
 
 @charset "UTF-8";
 
-@import url( 'fonts.css' );
-@import url( 'bargraph.css' );
+@import url('fonts.css');
+@import url('bargraph.css');
 
-html, body {
-    min-height: 100%;
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.2em;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 0.5em;
 }
 
 body {
-    background: #020021 url( /static/emf/bg.png ) no-repeat;
+    background: #020021 url('/static/emf/bg.png') no-repeat;
     background-size: contain;
     color: white;
     font-size: 24pt;
     font-family: ralewayregular, sans-serif;
-    margin: 30pt;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 20pt;
+    margin-right: 20pt;
     padding: 0;
     overflow: hidden;
 }
 
 header {
-    background: url('/static/emf/logo.png') no-repeat;
-    background-size: 400px;
-    display: table;
-    width: 100%;
-    height: 5%;
-    min-height: 84pt;
-    margin-bottom: 2pt;
+    text-align: center;
+    height: 160px;
 }
 
-header div {
-    display: table-cell;
-    text-align: center;
+#header {
+    margin-top: 50px;
 }
 
-header div h1 {
-    text-align: center;
+#logo {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#clock {
+    position: absolute;
+    top: 40px;
+    right: 30px;
+    font-size: 36pt;
+}
+
+#page {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 18pt;
+}
+
+@media screen and ( max-width: 1280px ) {
+    #logo {
+	display: none;
+    }
+    #clock {
+	display: none;
+    }
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.vh100 {
+    min-height: 100vh;
+}
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.mt-auto {
+    margin-top: auto;
+}
+
+.mb-auto {
+    margin-bottom: auto;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.float-right {
+    float: right;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
 }
 
 main table {
     font-size: 21pt;
     line-height: 1.5;
     width: 100%;
+    height: 100%;
     border-spacing: 0;
+    margin-bottom: 30px;
 }
 
 main table thead th {
@@ -70,27 +135,4 @@ main table tbody tr:nth-child(odd) {
 
 #header, #content, #page {
     transition: opacity 1s ease-in-out;
-}
-
-#clock {
-    position: absolute;
-    top: 80px;
-    right: 30px;
-    font-size: 36pt;
-}
-
-#page {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 18pt;
-}
-
-@media screen and ( max-width: 1024px ) {
-    header {
-	background: none;
-    }
-    #clock {
-	display: none;
-    }
 }

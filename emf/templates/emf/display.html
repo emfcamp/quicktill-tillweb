@@ -9,13 +9,14 @@
     <script type="module" src="{% static "emf/display.js" %}"></script>
   </head>
   <body>
-    <div id="clock">00:00</div>
-    <header>
-      <div>
+    <div class="flex-column vh100">
+      <header>
+	<div id="logo"><img src="{% static "emf/logo.png" %}" width="400"></div>
 	<h1 id="header">EMF Bar Information</h1>
-      </div>
-    </header>
-    <main id="content">Loading...</main>
+	<div id="clock">00:00</div>
+      </header>
+      <main id="content" class="flex-grow-1">Loading...</main>
+    </div>
     <div id="page"></div>
   </body>
 </html>
