@@ -89,12 +89,24 @@ header {
     margin-bottom: auto;
 }
 
+.ml-auto {
+    margin-left: auto;
+}
+
+.mr-auto {
+    margin-right: auto;
+}
+
 .flex-1 {
     flex: 1;
 }
 
 .float-right {
     float: right;
+}
+
+.list-style-none {
+    list-style: none;
 }
 
 main {
