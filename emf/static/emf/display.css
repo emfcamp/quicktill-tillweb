@@ -16,8 +16,8 @@ p {
 }
 
 body {
-    background: #020021 url('/static/emf/bg.png') no-repeat;
-    background-size: contain;
+    background: #020021 url('/static/emf/display-bg.png');
+    background-size: 2100px auto;
     color: white;
     font-size: 24pt;
     font-family: ralewayregular, sans-serif;
