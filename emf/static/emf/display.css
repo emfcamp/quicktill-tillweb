@@ -145,6 +145,10 @@ main table tbody tr:nth-child(odd) {
     font-size: 18pt;
 }
 
+.larger {
+    font-size: 36pt;
+}
+
 #header, #content, #page {
     transition: opacity 1s ease-in-out;
 }
