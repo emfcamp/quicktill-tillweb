@@ -58,15 +58,17 @@ class WinesAndSpirits(Display):
                         func.round(StockType.saleprice / (750/175), 1),
                         func.round(StockType.saleprice / (750/250), 1))\
                  .join(StockType)\
-                 .filter(StockType.dept_id == 9)\
+                 .filter(StockType.dept_id == 90)\
                  .filter(StockType.remaining > 0.0)\
                  .order_by(StockType.manufacturer, StockType.name)\
                  .all()
 
+        # XXX list wine cans here? Dept 95 for those
+
         # We want all stocktypes with dept 4, but only
         # if there are >0 qty remaining
         spirits = s.query(StockType)\
-                   .filter(StockType.dept_id == 4)\
+                   .filter(StockType.dept_id == 40)\
                    .filter(StockType.remaining > 0.0)\
                    .options(undefer('remaining'))\
                    .order_by(StockType.manufacturer, StockType.name)\
@@ -97,7 +99,7 @@ class SoftDrinks(Display):
 
     def __init__(self, s):
         soft = s.query(StockType, StockType.remaining / StockType.total * 100.0)\
-                .filter(StockType.dept_id == 7)\
+                .filter(StockType.dept_id == 70)\
                 .filter(StockType.remaining > 0.0)\
                 .options(undefer('remaining'))\
                 .order_by(StockType.manufacturer, StockType.name)\

@@ -51,11 +51,11 @@ def on_tap(s):
             .options(undefer('remaining'))\
             .options(contains_eager('stocktype'))
 
-    ales = base.filter(StockType.dept_id == 1).all()
+    ales = base.filter(StockType.dept_id == 10).all()
 
-    kegs = base.filter(StockType.dept_id.in_([2, 13])).all()
+    kegs = base.filter(StockType.dept_id.in_([20, 100, 105])).all()
 
-    ciders = base.filter(StockType.dept_id == 3).all()
+    ciders = base.filter(StockType.dept_id == 30).all()
 
     return ales, kegs, ciders
 
