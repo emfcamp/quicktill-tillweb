@@ -1,8 +1,10 @@
 <h2>Wines</h2>
 
 <p class="smaller">Available in 125ml, 175ml and 250ml measures as
-well as 750ml bottles.  Sorry: we're using half pint glasses because
-we don't have any wine glasses!</p>
+  well as 750ml bottles.  Sorry: we're using half pint glasses because
+  we don't have any wine glasses!</p>
+
+<p class="smaller">A selection of wines is also available in 250ml cans.</p>
 
 <table>
   <colgroup>
@@ -28,13 +30,13 @@ we don't have any wine glasses!</p>
   <tbody>
     {% for w, small, medium, large in wines %}
     <tr>
-      <td>{{ w.stocktype.manufacturer }} {{ w.stocktype.name }}</td>
-      <td>{{ w.stocktype.abv }}%</td>
+      <td>{{ w.manufacturer }} {{ w.name }}</td>
+      <td>{{ w.abv }}%</td>
       <td>£{{ small|stringformat:"0.2f" }}</td>
       <td>£{{ medium|stringformat:"0.2f" }}</td>
       <td>£{{ large|stringformat:"0.2f" }}</td>
-      <td>£{{ w.stocktype.saleprice }}</td>
-      {% if w.stocktype.remaining > 3000 %}
+      <td>£{{ w.saleprice }}</td>
+      {% if w.remaining > 3000 %}
       <td>Good</td>
       {% else %}
       <td>Last few</td>

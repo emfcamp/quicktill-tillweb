@@ -53,11 +53,10 @@ class WinesAndSpirits(Display):
     description = "Wines and spirits"
 
     def __init__(self, s):
-        wines = s.query(StockLine,
+        wines = s.query(StockType,
                         func.round(StockType.saleprice / (750/125), 1),
                         func.round(StockType.saleprice / (750/175), 1),
                         func.round(StockType.saleprice / (750/250), 1))\
-                 .join(StockType)\
                  .filter(StockType.dept_id == 90)\
                  .filter(StockType.remaining > 0.0)\
                  .order_by(StockType.manufacturer, StockType.name)\
