@@ -1,35 +1,32 @@
+<p>Chilled water is available on tap at the bar. Feel free to fill
+your own containers!</p>
+
 <table>
-	<colgroup>
-		<col width="50%" />
-		<col width="25%" />
-		<col width="25%" />
-	</colgroup>
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Price</th>
-			<th>Stock status</th>
-		</tr>
-	</thead>
-	<tbody>
-	{% for st, remain_pct in soft %}
-		<tr>
-			<td>{{ st.manufacturer }} {{ st.name }}</td>
-			{% if st.saleprice_units == 1 %}
-			<td>£{{ st.saleprice }}/{{ st.unit.name }}</td>
-			{% elif st.saleprice_units == 568.0 %}
-			<td>£{{ st.saleprice }}/pint</td>
-			{% else %}
-			<td>£{{ st.saleprice }}/{{ st.saleprice_units }} {{st.unit.name}}s</td>
-			{% endif %}
-			{% if remain_pct <= 7.5 %}
-				<td>Last few</td>
-			{% elif remain_pct <= 20.0 %}
-				<td>Low</td>
-			{% else %}
-				<td>Plenty</td>
-			{% endif %}
-		</tr>
-	{% endfor %}
-	</tbody>
+  <colgroup>
+    <col width="50%">
+    <col width="25%">
+    <col width="25%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Stock status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for st, remain_pct in soft %}
+    <tr>
+      <td>{{ st.manufacturer }} {{ st.name }}</td>
+      <td>£{{ st.saleprice }}/{{ st.unit.item_name }}</td>
+      {% if remain_pct <= 7.5 %}
+      <td>Last few</td>
+      {% elif remain_pct <= 20.0 %}
+      <td>Low</td>
+      {% else %}
+      <td>Plenty</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>

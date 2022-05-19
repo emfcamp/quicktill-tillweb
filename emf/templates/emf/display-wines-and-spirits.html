@@ -68,12 +68,12 @@
     <tr>
       <td>{{ t.manufacturer }} {{ t.name }}</td>
       <td>{{ t.abv }}%</td>
-      <td>£{{ t.saleprice }}/{{ t.unit.name }}</td>
+      <td>£{{ t.saleprice }}/{{ t.unit.item_name }}</td>
       {% if t.remaining <= 5.0 %}
-			   <td>Last few</td>
-			   {% elif t.remaining <= 10.0 %}
-						  <td>Low</td>
-						  {% else %}
+      <td>Last few</td>
+      {% elif t.remaining <= 10.0 %}
+      <td>Low</td>
+      {% else %}
       <td>Plenty</td>
       {% endif %}
       <!-- <td>{{ t.remaining|stringformat:"d" }}</td> -->
