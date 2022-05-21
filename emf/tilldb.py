@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+from django.conf import settings
 from quicktill.models import *
 
 # Monkeypatch the StockType class to have a "total" column so we can
@@ -11,6 +13,18 @@ StockType.total = column_property(
     label('total'),
     deferred=True,
     doc="Total amount booked in")
+
+
+# Context manager for till database sessions
+@contextmanager
+def tillsession():
+    s = settings.TILLWEB_DATABASE()
+    try:
+        yield s
+    finally:
+        s.rollback()
+        s.close()
+
 
 def booziness(s):
     """How much booze have we used?

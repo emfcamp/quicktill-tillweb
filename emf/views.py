@@ -87,17 +87,18 @@ class EventInfo:
 # to keep repeating it.  It's available in templates as 'dtf'
 dtf = "Y-m-d H:i"
 
+
 @login_required
 def refusals(request):
-    s = settings.TILLWEB_DATABASE()
-    r = s.query(RefusalsLog)\
-         .options(joinedload('user'))\
-         .order_by(RefusalsLog.id)\
-         .all()
-    return render(request, 'emf/refusals.html',
-                  context={'refusals': r,
-                           'dtf': dtf,
-                  })
+    with tillsession() as s:
+        r = s.query(RefusalsLog)\
+             .options(joinedload('user'))\
+             .order_by(RefusalsLog.id)\
+             .all()
+        return render(request, 'emf/refusals.html',
+                      context={'refusals': r,
+                               'dtf': dtf,
+                      })
 
 
 def display(request, page=None):
@@ -179,78 +180,78 @@ def display_page_info(request, page):
 
 
 def frontpage(request):
-    s = settings.TILLWEB_DATABASE()
+    with tillsession() as s:
+        info = EventInfo(current_time())
 
-    info = EventInfo(current_time())
+        alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
 
-    alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
+        ales, kegs, ciders = on_tap(s)
 
-    ales, kegs, ciders = on_tap(s)
+        sessions = emf.models.Session.objects.filter(
+            closing_time__gt=current_time())
 
-    sessions = emf.models.Session.objects.filter(
-        closing_time__gt=current_time())
-
-    return render(request, "emf/whatson.html",
-                  {"info": info,
-                   "alcohol_used": alcohol_used,
-                   "total_alcohol": total_alcohol,
-                   "alcohol_used_pct": alcohol_used_pct,
-                   "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
-                   "sessions": sessions,
-                   "ales": ales,
-                   "kegs": kegs,
-                   "ciders": ciders,
-                  })
+        return render(request, "emf/whatson.html",
+                      {"info": info,
+                       "alcohol_used": alcohol_used,
+                       "total_alcohol": total_alcohol,
+                       "alcohol_used_pct": alcohol_used_pct,
+                       "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
+                       "sessions": sessions,
+                       "ales": ales,
+                       "kegs": kegs,
+                       "ciders": ciders,
+                      })
 
 
 def locations_json(request):
-    s = settings.TILLWEB_DATABASE()
-    locations = [x[0] for x in s.query(distinct(StockLine.location))
-                 .order_by(StockLine.location).all()]
-    return JsonResponse({'locations': locations})
+    with tillsession() as s:
+        locations = [x[0] for x in s.query(distinct(StockLine.location))
+                     .order_by(StockLine.location).all()]
+        return JsonResponse({'locations': locations})
 
 
 def location_json(request, location):
-    s = settings.TILLWEB_DATABASE()
-    lines = s.query(StockLine)\
-             .filter(StockLine.location == location)\
-             .order_by(StockLine.name)\
-             .all()
+    with tillsession() as s:
+        lines = s.query(StockLine)\
+                 .filter(StockLine.location == location)\
+                 .order_by(StockLine.name)\
+                 .all()
 
-    return JsonResponse({'location': [
-        {"line": l.name,
-         "description": l.sale_stocktype.format(),
-         "price": l.sale_stocktype.saleprice,
-         "price_for_units": l.sale_stocktype.unit.units_per_item,
-         "unit": l.sale_stocktype.unit.name}
-        for l in lines if l.stockonsale or l.linetype == "continuous"]})
+        return JsonResponse({'location': [
+            {"line": l.name,
+             "description": l.sale_stocktype.format(),
+             "price": l.sale_stocktype.saleprice,
+             "price_for_units": l.sale_stocktype.unit.units_per_item,
+             "unit": l.sale_stocktype.unit.name}
+            for l in lines if l.stockonsale or l.linetype == "continuous"]})
 
 
 def stock_json(request):
-    s = settings.TILLWEB_DATABASE()
-    stock = s.query(StockType)\
-             .filter(StockType.remaining > 0)\
-             .order_by(StockType.dept_id)\
-             .order_by(StockType.manufacturer)\
-             .order_by(StockType.name)\
-             .all()
-    return JsonResponse({'stock': [{
-        'description': s.format(),
-        'remaining': s.remaining,
-        'unit': s.unit.name
-        } for s in stock]})
+    with tillsession() as s:
+        stock = s.query(StockType)\
+                 .filter(StockType.remaining > 0)\
+                 .order_by(StockType.dept_id)\
+                 .order_by(StockType.manufacturer)\
+                 .order_by(StockType.name)\
+                 .all()
+        return JsonResponse(
+            {'stock': [{
+                'description': s.format(),
+                'remaining': s.remaining,
+                'unit': s.unit.name,
+            } for s in stock]})
 
 
 def progress_json(request):
-    s = settings.TILLWEB_DATABASE()
-    alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
-    info = EventInfo(current_time())
+    with tillsession() as s:
+        alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
+        info = EventInfo(current_time())
 
-    return JsonResponse(
-        {'licensed_time_pct': info.completed_pct,
-         'expected_consumption_pct': info.expected_consumption_pct,
-         'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
-        })
+        return JsonResponse(
+            {'licensed_time_pct': info.completed_pct,
+             'expected_consumption_pct': info.expected_consumption_pct,
+             'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
+            })
 
 
 def sessions_json(request):

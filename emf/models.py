@@ -5,6 +5,7 @@ import markdown as markdown_module
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.conf import settings
+from .tilldb import tillsession
 from .display import displays
 
 
@@ -135,7 +136,8 @@ class DisplayPage(models.Model):
     def render_content(self):
         if self.template:
             cls = displays[self.template]
-            return cls(settings.TILLWEB_DATABASE()).text
+            with tillsession() as s:
+                return cls(s).text
 
         return mark_safe(
             markdown_module.markdown(
