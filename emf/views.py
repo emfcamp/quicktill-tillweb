@@ -180,6 +180,12 @@ def display_page_info(request, page):
 
 
 def frontpage(request):
+    try:
+        page = emf.models.Page.objects.get(path='')
+        content = page.as_html()
+    except emf.models.Page.DoesNotExist:
+        content = ''
+
     with tillsession() as s:
         info = EventInfo(current_time())
 
@@ -200,6 +206,7 @@ def frontpage(request):
                        "ales": ales,
                        "kegs": kegs,
                        "ciders": ciders,
+                       "content": content,
                       })
 
 

@@ -45,9 +45,9 @@ class Page(models.Model):
     """A page of content for the website
     """
     path = models.CharField(
-        max_length=80, unique=True,
+        max_length=80, unique=True, blank=True,
         help_text="Used to form the URL for the page. Lower-case, no spaces, "
-        "do not include leading or trailing '/'.")
+        "do not include leading or trailing '/'. Blank for front page.")
 
     title = models.CharField(max_length=200)
 
