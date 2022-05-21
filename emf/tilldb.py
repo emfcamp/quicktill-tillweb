@@ -67,10 +67,8 @@ def on_tap(s):
 
     ales = base.filter(StockType.dept_id == 10).all()
 
-    kegs = base.filter(StockType.dept_id.in_([20, 100, 105])).all()
+    kegs = base.filter(StockType.dept_id.in_([20, 100])).all()
 
-    ciders = base.filter(StockType.dept_id == 30).all()
+    ciders = base.filter(StockType.dept_id.in_([30, 105])).all()
 
     return ales, kegs, ciders
-
-
