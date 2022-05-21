@@ -1,0 +1,52 @@
+{% extends "emf/base.html" %}
+{% load static %}
+{% block title %}The Robot Arms — Price List{% endblock %}
+
+{% block heading %}
+<h1>The Robot Arms — Price List</h1>
+{% endblock %}
+
+{% block content %}
+<p>N.B. not all draught beers and ciders are on sale at the same
+time. See <a href="{% url "frontpage" %}">the front page</a> for the
+current selection.</p>
+
+<table>
+  <colgroup>
+    <col width="50%" />
+    <col width="16.66%" />
+    <col width="16.66%" />
+    <col width="16.66%" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>ABV</th>
+      <th>Price</th>
+      <th>Stock status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p, remain_pct in products %}
+    {% ifchanged p.department.description %}
+    <thead class="sub">
+      <tr>
+	<th colspan="4">{{p.department.description}}</th>
+      </tr>
+    </thead>
+    {% endifchanged %}
+    <tr>
+      <td>{{ p.manufacturer }} {{ p.name }}</td>
+      <td>{% if p.abv != None %}{{ p.abv }}%{% endif %}</td>
+      <td>£{{ p.saleprice }}/{{ p.unit.item_name }}</td>
+      <td>
+	{% if remain_pct <= 5.0 %}Last few
+	{% elif remain_pct <= 15.0 %}Low
+        {% else %}Plenty
+        {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

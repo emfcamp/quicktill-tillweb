@@ -134,3 +134,8 @@ table thead th {
 table tbody tr:nth-child(odd) {
 	background-color: rgba( 255, 255, 255, .1 );
 }
+
+table thead.sub th {
+    padding-top: 12pt;
+    border-bottom: unset;
+}

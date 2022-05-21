@@ -210,6 +210,22 @@ def frontpage(request):
                       })
 
 
+def pricelist(request):
+    with tillsession() as s:
+        products = s.query(StockType,
+                           StockType.remaining / StockType.total * 100.0)\
+            .join(Unit)\
+            .join(Department)\
+            .options(undefer('remaining'))\
+            .order_by(Department.id, StockType.manufacturer, StockType.name)\
+            .filter(StockType.remaining > 0.0)\
+            .all()
+
+        return render(request, "emf/pricelist.html",
+                      {"products": products,
+                      })
+
+
 def locations_json(request):
     with tillsession() as s:
         locations = [x[0] for x in s.query(distinct(StockLine.location))

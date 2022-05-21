@@ -3,6 +3,7 @@ from emf.views import *
 
 urls = [
     path('', frontpage, name="frontpage"),
+    path('prices/', pricelist, name="pricelist"),
     path('locations.json', locations_json, name="locations-json"),
     path('location/<location>.json', location_json,
          name="location-json"),
