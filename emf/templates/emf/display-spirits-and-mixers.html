@@ -1,0 +1,54 @@
+<table{% if num_items > 16 %} class="smaller"{% endif %}>
+  <colgroup>
+    <col width="40%">
+    <col width="20%">
+    <col width="30%">
+    <col width="20%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>ABV</th>
+      <th>Price</th>
+      <th>Stock status</th>
+    </tr>
+  </thead>
+  <thead class="sub">
+    <tr><th>Spirits</th></tr>
+  </thead>
+  <tbody>
+    {% for t in spirits %}
+    <tr>
+      <td>{{ t.manufacturer }} {{ t.name }}</td>
+      <td>{{ t.abv }}%</td>
+      <td>£{{ t.saleprice }}/{{ t.unit.item_name }}</td>
+      {% if t.remaining <= 5.0 %}
+      <td>Last few</td>
+      {% elif t.remaining <= 10.0 %}
+      <td>Low</td>
+      {% else %}
+      <td>Plenty</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+  <thead class="sub">
+    <tr><th>Mixers</th></tr>
+  </thead>
+  <tbody>
+    {% for st, remain_pct in soft %}
+    <tr>
+      <td>{{ st.manufacturer }} {{ st.name }}</td>
+      <td></td>
+      <td>£{{ st.saleprice }}/{{ st.unit.item_name }}</td>
+      {% if remain_pct <= 7.5 %}
+      <td>Last few</td>
+      {% elif remain_pct <= 20.0 %}
+      <td>Low</td>
+      {% else %}
+      <td>Plenty</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

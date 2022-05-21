@@ -1,0 +1,84 @@
+<div class="mt-auto mb-auto">
+<h2>Wine bottles</h2>
+
+<p class="smaller">Available in 125ml, 175ml and 250ml measures as
+  well as 750ml bottles.  Sorry: we're using half pint glasses because
+  we don't have any wine glasses!</p>
+
+<table>
+  <colgroup>
+    <col width="40%">
+    <col width="10%">
+    <col width="10%">
+    <col width="10%">
+    <col width="10%">
+    <col width="10%">
+    <col width="10%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>ABV</th>
+      <th>125ml</th>
+      <th>175ml</th>
+      <th>250ml</th>
+      <th>Bottle</th>
+      <th>Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for w, small, medium, large in wines %}
+    <tr>
+      <td>{{ w.manufacturer }} {{ w.name }}</td>
+      <td>{{ w.abv }}%</td>
+      <td>£{{ small|stringformat:"0.2f" }}</td>
+      <td>£{{ medium|stringformat:"0.2f" }}</td>
+      <td>£{{ large|stringformat:"0.2f" }}</td>
+      <td>£{{ w.saleprice }}</td>
+      {% if w.remaining > 3000 %}
+      <td>Plenty</td>
+      {% else %}
+      <td>Last few</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</div>
+<div class="mt-auto mb-auto">
+<h2>Wine cans</h2>
+
+<table>
+  <colgroup>
+    <col width="40%">
+    <col width="30%">
+    <col width="20%">
+    <col width="10%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>ABV</th>
+      <th>Price</th>
+      <th>Stock status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in cans %}
+    <tr>
+      <td>{{ t.manufacturer }} {{ t.name }}</td>
+      <td>{{ t.abv }}%</td>
+      <td>£{{ t.saleprice }}/{{ t.unit.item_name }}</td>
+      {% if t.remaining <= 5.0 %}
+      <td>Last few</td>
+      {% elif t.remaining <= 10.0 %}
+      <td>Low</td>
+      {% else %}
+      <td>Plenty</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>

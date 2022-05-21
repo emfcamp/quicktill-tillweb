@@ -49,6 +49,34 @@ class CansAndBottles(Display):
             })
 
 
+class Wines(Display):
+    description = "Wines and wine cans"
+
+    def __init__(self, s):
+        wines = s.query(StockType,
+                        func.round(StockType.saleprice / (750/125), 1),
+                        func.round(StockType.saleprice / (750/175), 1),
+                        func.round(StockType.saleprice / (750/250), 1))\
+                 .filter(StockType.dept_id == 90)\
+                 .filter(StockType.remaining > 0.0)\
+                 .order_by(StockType.manufacturer, StockType.name)\
+                 .all()
+
+        cans = s.query(StockType)\
+                .join(Unit)\
+                .filter(StockType.dept_id == 95)\
+                .filter(StockType.remaining > 0.0)\
+                .filter(StockType.abv != None)\
+                .options(undefer('remaining'))\
+                .order_by(StockType.manufacturer, StockType.name)\
+                .all()
+
+        self.text = render_to_string(
+            'emf/display-wines.html',
+            context={'wines': wines, 'cans': cans})
+
+
+# Not used in 2022
 class WinesAndSpirits(Display):
     description = "Wines and spirits"
 
@@ -76,6 +104,32 @@ class WinesAndSpirits(Display):
         self.text = render_to_string(
             'emf/display-wines-and-spirits.html',
             context={'wines': wines, 'spirits': spirits})
+
+
+class SpiritsAndMixers(Display):
+    description = "Spirits and mixers"
+
+    def __init__(self, s):
+        spirits = s.query(StockType)\
+                   .filter(StockType.dept_id == 40)\
+                   .filter(StockType.remaining > 0.0)\
+                   .options(undefer('remaining'))\
+                   .order_by(StockType.manufacturer, StockType.name)\
+                   .all()
+
+        soft = s.query(StockType, StockType.remaining / StockType.total * 100.0)\
+                .filter(StockType.dept_id == 70)\
+                .filter(StockType.remaining > 0.0)\
+                .options(undefer('remaining'))\
+                .order_by(StockType.manufacturer, StockType.name)\
+                .all()
+
+        self.text = render_to_string(
+            'emf/display-spirits-and-mixers.html',
+            context={'spirits': spirits,
+                     'soft': soft,
+                     'num_items': len(spirits) + len(soft),
+            })
 
 
 class ClubMate(Display):
