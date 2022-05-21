@@ -1,33 +1,32 @@
-<table>
-	<colgroup>
-		<col width="50%" />
-		<col width="16.66%" />
-		<col width="16.66%" />
-		<col width="16.66%" />
-	</colgroup>
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>ABV</th>
-			<th>Price</th>
-			<th>Stock status</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for t in types %}
-			<tr>
-				<td>{{ t.manufacturer }} {{ t.name }}</td>
-				<td>{{ t.abv }}%</td>
-				<td>£{{ t.saleprice }}/{{ t.unit.name }}</td>
-				{% if t.remaining <= 5.0 %}
-					<td>Last few</td>
-				{% elif t.remaining <= 10.0 %}
-					<td>Low</td>
-				{% else %}
-					<td>Plenty</td>
-				{% endif %}
-				<!-- <td>{{ t.remaining|stringformat:"d" }}</td> -->
-			</tr>
-		{% endfor %}
-	</tbody>
+<table{% if num_types > 19 %} class="smaller"{% endif %}>
+  <colgroup>
+    <col width="50%" />
+    <col width="16.66%" />
+    <col width="16.66%" />
+    <col width="16.66%" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>ABV</th>
+      <th>Price</th>
+      <th>Stock status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in types %}
+    <tr>
+      <td>{{ t.manufacturer }} {{ t.name }}</td>
+      <td>{{ t.abv }}%</td>
+      <td>£{{ t.saleprice }}/{{ t.unit.item_name }}</td>
+      {% if t.remaining <= 5.0 %}
+      <td>Last few</td>
+      {% elif t.remaining <= 10.0 %}
+      <td>Low</td>
+      {% else %}
+      <td>Plenty</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>

@@ -30,14 +30,12 @@ class OnTap(Display):
 
 
 class CansAndBottles(Display):
-    description = "Cans and bottles"
+    description = "Craft cans and bottles"
 
     def __init__(self, s):
-        # We want all stocktypes with unit 'can' or unit 'bottle', but only
-        # if there are >0 qty remaining
         r = s.query(StockType)\
              .join(Unit)\
-             .filter(Unit.name.in_(['can', 'bottle']))\
+             .filter(StockType.dept_id.in_([60, 62, 64, 66]))\
              .filter(StockType.remaining > 0.0)\
              .filter(StockType.abv != None)\
              .options(undefer('remaining'))\
@@ -46,7 +44,9 @@ class CansAndBottles(Display):
 
         self.text = render_to_string(
             'emf/display-cans-and-bottles.html',
-            context={'types': r})
+            context={'types': r,
+                     'num_types': len(r),
+            })
 
 
 class WinesAndSpirits(Display):
