@@ -29,11 +29,13 @@ current selection.</p>
   <tbody>
     {% for p, remain_pct in products %}
     {% ifchanged p.department.description %}
-    <thead class="sub">
-      <tr>
-	<th colspan="4">{{p.department.description}}</th>
-      </tr>
-    </thead>
+  </tbody>
+  <thead class="sub">
+    <tr>
+      <th colspan="4">{{p.department.description}}</th>
+    </tr>
+  </thead>
+  <tbody>
     {% endifchanged %}
     <tr>
       <td>{{ p.manufacturer }} {{ p.name }}</td>
