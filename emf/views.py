@@ -226,46 +226,17 @@ def pricelist(request):
                       })
 
 
-def locations_json(request):
-    with tillsession() as s:
-        locations = [x[0] for x in s.query(distinct(StockLine.location))
-                     .order_by(StockLine.location).all()]
-        return JsonResponse({'locations': locations})
+# API views that do not access the till database
+def api_sessions(request):
+    sessions = emf.models.Session.objects.all()
+    return JsonResponse(
+        {'sessions': [
+            { k: getattr(s, k) for k in ('opening_time', 'closing_time') }
+            for s in sessions ],
+        })
 
 
-def location_json(request, location):
-    with tillsession() as s:
-        lines = s.query(StockLine)\
-                 .filter(StockLine.location == location)\
-                 .order_by(StockLine.name)\
-                 .all()
-
-        return JsonResponse({'location': [
-            {"line": l.name,
-             "description": l.sale_stocktype.format(),
-             "price": l.sale_stocktype.saleprice,
-             "price_for_units": l.sale_stocktype.unit.units_per_item,
-             "unit": l.sale_stocktype.unit.name}
-            for l in lines if l.stockonsale or l.linetype == "continuous"]})
-
-
-def stock_json(request):
-    with tillsession() as s:
-        stock = s.query(StockType)\
-                 .filter(StockType.remaining > 0)\
-                 .order_by(StockType.dept_id)\
-                 .order_by(StockType.manufacturer)\
-                 .order_by(StockType.name)\
-                 .all()
-        return JsonResponse(
-            {'stock': [{
-                'description': s.format(),
-                'remaining': s.remaining,
-                'unit': s.unit.name,
-            } for s in stock]})
-
-
-def progress_json(request):
+def api_progress(request):
     with tillsession() as s:
         alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
         info = EventInfo(current_time())
@@ -275,12 +246,3 @@ def progress_json(request):
              'expected_consumption_pct': info.expected_consumption_pct,
              'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
             })
-
-
-def sessions_json(request):
-    sessions = emf.models.Session.objects.all()
-    return JsonResponse(
-        {'sessions': [
-            { k: getattr(s, k) for k in ('opening_time', 'closing_time') }
-            for s in sessions ],
-        })

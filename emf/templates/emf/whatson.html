@@ -75,15 +75,8 @@
 
     <p>Pull requests welcome!</p>
 
-    <p>A simple JSON interface is available:</p>
-    <ul>
-      <li><a href="{% url "locations-json" %}">https://bar.emfcamp.org{% url "locations-json" %}</a>
-        lists the groups of stock that are on sale at the moment</li>
-      <li>https://bar.emfcamp.org/location/[name].json lists stock on sale in a
-        location, for example the <a href="{% url "location-json" "Bar" %}">Bar</a> location</li>
-      <li><a href="{% url "stock-json" %}">https://bar.emfcamp.org{% url "stock-json" %}</a> lists everything we have left in stock.</li>
-      <li><a href="{% url "progress-json" %}">https://bar.emfcamp.org{% url "progress-json" %}</a> compares how much we've actually drunk with what we predicted before the event...</li>
-    </ul>
+    <p>A simple JSON interface is available; see the documentation
+    at <a href="http://developer.emfcamp.org/">developer.emfcamp.org</a>.
   </div>
 
   <div class="align-bottom">
