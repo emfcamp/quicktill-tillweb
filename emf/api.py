@@ -26,6 +26,7 @@ def stocktype_to_dict(s):
         'base_units_remaining': s.remaining,
         'base_unit': s.unit.name,
         'sale_unit': s.unit.item_name,
+        'base_units_per_sale_unit': s.unit.units_per_item,
     }
 
 
@@ -38,6 +39,7 @@ def stockitem_to_dict(s, remain_fraction=None):
         'abv': s.stocktype.abv,
         'fullname': format(s.stocktype),
         'price': s.stocktype.saleprice,
+        'remaining_pct': None,
     }
     if remain_fraction is not None:
         d['remaining_pct'] = remain_fraction * 100
