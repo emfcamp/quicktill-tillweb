@@ -2,6 +2,7 @@
 from django.template.loader import render_to_string
 from quicktill.models import *
 from .tilldb import *
+from math import floor
 
 displays = {}
 
@@ -178,6 +179,33 @@ class Progress(Display):
                 'total_alcohol': total_alcohol,
                 'alcohol_used_pct': alcohol_used_pct,
                 'alcohol_used_pct_remainder': 100.0 - alcohol_used_pct,
+            })
+
+
+class ProgressFacts(Display):
+    description = "Bar Fun Facts"
+
+    def __init__(self, s):
+        alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
+        from .views import EventInfo, current_time
+        info = EventInfo(current_time())
+        shots = floor(alcohol_used / 10)
+
+        self.text = render_to_string(
+            'emf/display-bar-fun-facts.html',
+            context={
+                'info': info, 'alcohol_used': alcohol_used,
+		'alcohol_used_litres': floor(alcohol_used / 1000.0),
+                'total_alcohol': total_alcohol,
+                'alcohol_used_pct': alcohol_used_pct,
+                'alcohol_used_pct_remainder': 100.0 - alcohol_used_pct,
+		'elephants_drunk': floor(alcohol_used / 1890.0),
+		'drink_drive': floor(alcohol_used / 35),
+		'shots': shots,
+		'shottime': floor(shots / 30),
+		'cars': floor(alcohol_used / 1250),
+		'scots': alcohol_used / 10000.0,
+		'libyans': alcohol_used / 0.027
             })
 
 
