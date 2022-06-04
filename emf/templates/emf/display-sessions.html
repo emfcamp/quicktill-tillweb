@@ -1,11 +1,12 @@
 <div class="mt-auto mb-auto center larger">
   {% if sessions %}
+  <h2>Opening hours</h2>
   <ul class="list-style-none">
     {% for s in sessions %}
     <li>{{s.opening_time|date:"l H:i"}} – {{s.closing_time|date:"H:i"}}{% if s.comment %} {{s.comment}}{% endif %}</li>
     {% endfor %}
   </ul>
   {% else %}
-  <p>The event is over!</p>
+  <h2>The event is over!</h2>
   {% endif %}
 </div>
