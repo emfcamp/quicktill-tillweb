@@ -12,6 +12,8 @@ urls = [
     path('display/<page>/info.json', display_page_info,
          name="display-page-info"),
 
+    path('jontyfacts/', jontyfacts, name="jontyfacts"),
+
     path('api/sessions.json', api_sessions, name="api-sessions"),
     path('api/progress.json', api_progress, name="api-progress"),
     path('api/departments.json', api.departments, name="api-departments"),
