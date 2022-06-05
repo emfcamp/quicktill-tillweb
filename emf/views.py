@@ -225,6 +225,53 @@ def pricelist(request):
                       {"products": products,
                       })
 
+def jontyfacts(request):
+    from quicktill.models import StockItem, StockType, Unit, StockOut, User
+    with tillsession() as s:
+        pints_sold = s.query(func.sum(StockOut.qty)) \
+            .select_from(StockOut)\
+            .join(StockItem)\
+            .join(StockType)\
+            .join(Unit)\
+            .filter(Unit.name == 'pint')\
+            .filter(StockOut.removecode_id == 'sold')\
+            .scalar()
+
+        total_pints = s.query(func.sum(StockItem.size)) \
+            .select_from(StockItem)\
+            .join(StockType)\
+            .join(Unit)\
+            .filter(Unit.name == 'pint')\
+            .scalar()
+
+        volunteers = s.query(User).count()
+
+        card_payments = s.query(Payment)\
+            .filter(Payment.paytype_id == 'CARD')\
+            .count()
+
+        card_roll_used = card_payments * 0.12
+
+        cash_payments = s.query(Payment)\
+            .filter(Payment.paytype_id == 'CASH')\
+            .filter(Payment.amount > Decimal("0.00"))\
+            .count()
+
+        club_mate = s.query(func.sum(StockItem.used))\
+            .select_from(StockItem)\
+            .join(StockType)\
+            .filter(StockType.dept_id == 75)\
+            .scalar()
+
+        return render(request, "emf/jontyfacts.html",
+                      {"pints_sold": pints_sold,
+                       "total_pints": total_pints,
+                       "volunteers": volunteers - 1, # remove 1 for "shop"
+                       "card_payments": card_payments,
+                       "cash_payments": cash_payments,
+                       "card_roll_used": card_roll_used,
+                       "club_mate": club_mate,
+                       })
 
 # API views that do not access the till database
 def api_sessions(request):
