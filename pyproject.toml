@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "quicktill-tillweb"
+version = "0.2.0"
+description = "Simple Django project to run quicktill.tillweb"
+authors = ["Stephen Early <steve@assorted.org.uk>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+Django = "~3.2"
+django-bootstrap-breadcrumbs = "~0.9"
+django-widget-tweaks = "~1.4"
+matplotlib = "~3.1"
+psycopg2 = "~2.9"
+pillow = "~9.0"
+odfpy = "~1.4"
+sqlalchemy = "~1.3"
+quicktill = { path = "../quicktill", develop = true }
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

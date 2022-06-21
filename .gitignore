@@ -1,6 +1,5 @@
 *~
 /secret_key
-/foodmenu.py
 *.pyc
 __pycache__
 /static/

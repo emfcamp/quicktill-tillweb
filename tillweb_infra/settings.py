@@ -76,7 +76,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'tillweb_infra.context_processors.pubname_setting',
-                'tillmenu.context_processors.food_menu_editor_setting',
             ],
         },
     },

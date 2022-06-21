@@ -14,7 +14,7 @@ Environment=DJANGO_SETTINGS_MODULE=tillweb_infra.settings_production
 
 Type=notify
 ExecStartPre=%h/tillweb/systemd/setup.sh
-ExecStart=/usr/bin/uwsgi --ini=%h/tillweb/systemd/tillweb-uwsgi.conf
+ExecStart=%h/tillweb/systemd/start.sh
 KillSignal=SIGINT
 
 [Install]

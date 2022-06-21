@@ -9,8 +9,5 @@ if [ "${DJANGO_SETTINGS_MODULE}" = "" ]; then
     exit 1
 fi
 
-set -e
-
-source venv/bin/activate
-./manage.py collectstatic --no-input
-./manage.py migrate
+poetry run ./manage.py collectstatic --no-input
+poetry run ./manage.py migrate
