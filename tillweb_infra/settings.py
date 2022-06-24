@@ -11,15 +11,13 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # imported by settings_production.py and some settings are added
 # and/or changed.
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+from pathlib import Path
 
-# BASE_DIR is the root of the whole project, i.e. the directory where
-# the manage.py script is
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open(os.path.join(BASE_DIR, "secret_key")) as f:
+with open(BASE_DIR / 'config' / 'secret_key') as f:
     SECRET_KEY = f.readline().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -66,7 +64,8 @@ ROOT_URLCONF = 'tillweb_infra.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates"),
+        'DIRS': [
+            BASE_DIR / "templates",
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -93,7 +92,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR / 'database' / 'db.sqlite3',
     }
 }
 
@@ -127,11 +126,11 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static-dist"),
+    BASE_DIR / "static-dist",
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = BASE_DIR / "media"
 
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/accounts/users/%d/" % o.id,
@@ -159,8 +158,7 @@ from .settings_database import *
 FOOD_MENU_EDITOR = False
 
 # Currency symbol
-with open(os.path.join(BASE_DIR, "currency_symbol")) as f:
-    TILLWEB_MONEY_SYMBOL = f.readline().strip()
+TILLWEB_MONEY_SYMBOL = "£"
 
 # Logging - when running testserver, output SQL queries and responses
 LOGGING = {

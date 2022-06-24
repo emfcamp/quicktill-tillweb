@@ -5,25 +5,25 @@
 # access mode.  If you want to do something different, replace the
 # contents of this file.
 
-import os
-
 from django.urls import reverse
-
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-with open(os.path.join(base_dir, "database_name")) as f:
-    TILLWEB_DATABASE_NAME = f.readline().strip()
+import os
+
+USING_DOCKER = os.getenv("USING_DOCKER", default="no") != "no"
+
+TILLWEB_DATABASE_NAME = "emfcamp"
+
+dbaccess = 'till:till@postgres:5432' if USING_DOCKER else ''
 
 TILLWEB_SINGLE_SITE = True
 TILLWEB_DATABASE = sessionmaker(
     bind=create_engine(
-        'postgresql+psycopg2:///{}'.format(TILLWEB_DATABASE_NAME),
+        f'postgresql+psycopg2://{dbaccess}/{TILLWEB_DATABASE_NAME}',
         pool_size=32, pool_recycle=600),
     info={'pubname': 'detail', 'reverse': reverse})
-with open(os.path.join(base_dir, "till_name")) as f:
-    TILLWEB_PUBNAME = f.readline().strip()
+TILLWEB_PUBNAME = "Electromagnetic Field"
 TILLWEB_LOGIN_REQUIRED = True
 TILLWEB_DEFAULT_ACCESS = "M"

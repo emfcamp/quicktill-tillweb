@@ -1,0 +1,8 @@
+.git
+media
+static
+systemd
+config
+database
+**/__pycache__
+**/*~

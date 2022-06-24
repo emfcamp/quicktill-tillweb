@@ -1,10 +1,7 @@
 *~
-/secret_key
+/config/
 *.pyc
 __pycache__
 /static/
 /media/
-/tillweb.pid
-/db.sqlite3
-/uwsgi.log
-/venv/
+/database/

@@ -1,0 +1,31 @@
+version: "3.8"
+name: "emftillweb"
+
+services:
+  app:
+    image: "emftillweb-app"
+    networks:
+      - emftillweb
+    depends_on:
+      - postgres
+    volumes:
+      - ../config:/app/config
+      - ../database:/app/database
+      - ../media:/app/media
+    ports:
+      - "8000:8000"
+
+  postgres:
+    image: "emftillweb-postgres"
+    networks:
+      - emftillweb
+
+  static:
+    image: "emftillweb-static"
+    volumes:
+      - ../media:/web/media
+    ports:
+      - "8001:80"
+
+networks:
+  emftillweb:

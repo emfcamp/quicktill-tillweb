@@ -1,8 +1,8 @@
 EMF Till web service
 ====================
 
-Minimal infrastructure needed to bring up an instance of
-`quicktill.tillweb` as a uwsgi service.
+Infrastructure needed to bring up an instance of `quicktill.tillweb`,
+plus the public-facing web pages for https://bar.emfcamp.org/
 
 This is the EMF-specific fork of the project and contains assumptions
 about how the EMF till is configured. [There is a separate repo for the generic version of the project here.](https://github.com/sde1000/quicktill-tillweb)
@@ -10,60 +10,55 @@ about how the EMF till is configured. [There is a separate repo for the generic 
 Setup for development
 ---------------------
 
-Ensure you have [poetry](https://python-poetry.org/)
-installed. Installation instructions are on
-[this page](https://python-poetry.org/docs/master/).
-
-First install [quicktill](https://github.com/sde1000/quicktill) and
-follow the quick start instructions to create the emfcamp database
-using the 2018 test dataset.
-
-Install the project dependencies:
+Create a file `config/secret_key` containing a random secret:
 
 ```
-poetry install
+mkdir -p config
+python3 -c "import secrets; print(secrets.token_urlsafe())" >config/secret_key
 ```
 
-To configure, create a file `secret_key` containing a random secret:
+Run `docker compose build` to build the development images, and
+`docker compose up` to start the development web server. Once running,
+you should be able to access the project at http://localhost:8000/
 
-```
-python3 -c "import secrets; print(secrets.token_urlsafe())" >secret_key
-```
+The development web server should pick up any changes you make
+immediately. If you create a new migration, you'll need to stop and
+restart manually to execute the migration.
 
-Create the Django database and an initial admin user:
+Press Ctrl+C to stop the development web server.
 
-```
-poetry run ./manage.py migrate
-poetry run ./manage.py createsuperuser
-```
+To create a local superuser, run `docker compose run --rm app ./manage.py
+createsuperuser`
 
-To start a web server on http://localhost:8000/ to test the service:
-```
-poetry run ./manage.py runserver
-```
+To clean up afterwards, run `docker compose down --rmi local`
 
-Installation
-------------
+Updating dependencies
+---------------------
 
-As root:
+If you update any dependencies in `pyproject.toml` you should run
+`docker compose run --rm app poetry lock` to update the `poetry.lock`
+file. This may take a long time because it will have to start from
+scratch without a cache. If you have poetry installed in your
+development environment, it may be faster to run `poetry lock`
+directly.
 
-* copy `tillweb-nginx-configuration` to `/etc/nginx/sites-available/tillweb`
-and edit it as appropriate.
-* delete `/etc/nginx/sites-enabled/default` and symlink
-`/etc/nginx/sites-available/tillweb` to `/etc/nginx/sites-enabled/tillweb`
-* run `loginctl enable-linger your-username` to enable the service to run
-while you are not logged in
+Afer updating dependencies you should run `docker compose build` again
+to rebuild the development images.
 
-As the user that will run the service:
+Developing without docker
+-------------------------
 
-Copy `systemd/tillweb.service` to `~/.config/systemd/user/` and enable it:
+To develop without docker you will need a local installation of
+`poetry`, and a postgresql database called "emfcamp" with a till
+database dump installed in it. You can find a suitable dump under
+`docker/data/`.
 
-```
-mkdir -p ~/.config/systemd/user
-cp systemd/tillweb.service ~/.config/systemd/user/
-systemctl --user enable tillweb.service
-systemctl --user start tillweb.service
-```
+Install dependencies: `poetry install`
 
-Outside of the scope of these instructions: set up DNS entries and
-letsencrypt so you can access the service over https.
+Create a secret key as above.
+
+Create/update the django database: `poetry run ./manage.py migrate`
+
+Create a superuser: `poetry run ./manage.py createsuperuser`
+
+Run the development server: `poetry run ./manage.py runserver`
