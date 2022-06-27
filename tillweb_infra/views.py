@@ -258,10 +258,6 @@ def emfsso_callback(request):
     email = profile['email']
     full_name = profile['name']
 
-    if "team_bar" not in groups:
-        messages.error(request, "EMF SSO: You are not a member of Team Bar")
-        return redirect("login-page")
-
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
