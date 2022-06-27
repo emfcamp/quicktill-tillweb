@@ -13,12 +13,16 @@ import emf.urls
 
 urlpatterns = [
     path('accounts/', include([
-        path('login/', auth_views.LoginView.as_view(), name="login-page"),
+        path('login/', auth_views.LoginView.as_view(
+            extra_context={'EMFSSO_ENABLED': settings.EMFSSO_ENABLED}),
+             name="login-page"),
         path('logout/', auth_views.LogoutView.as_view(), name="logout-page"),
         path('profile/', views.userprofile, name="user-profile-page"),
         path('change-password/', views.pwchange, name="password-change-page"),
         path('users/', views.users, name="userlist"),
         path('users/<int:userid>/', views.userdetail, name="userdetail"),
+        path('oauth2/login/', views.emfsso_login, name="emfsso-login"),
+        path('oauth2/callback/', views.emfsso_callback, name="emfsso-callback"),
     ])),
     path('admin/', admin.site.urls),
     path('detail/', include(quicktill.tillweb.urls.tillurls),

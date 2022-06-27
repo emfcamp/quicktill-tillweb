@@ -6,17 +6,28 @@
 <div class="container text-center mt-5">
   <div class="row">
     <div class="col">
+	<h1 class="h3 mb-5 font-weight-normal">Please sign in</h1>
+	{% if user.is_authenticated %}
+	<div class="alert alert-warning mb-5">
+	  <strong>Note:</strong> You are already signed in as {{user.get_full_name}}.
+	</div>
+	{% endif %}
+    </div>
+  </div>
+  {% if EMFSSO_ENABLED %}
+  <div class="row mb-5">
+    <div class="col">
+      <a href="{% url "emfsso-login" %}{% if next %}?next={{next|escape}}{% endif %}" class="btn btn-primary btn-lg">Sign in with EMF SSO</a>
+    </div>
+  </div>
+  {% endif %}
+  <div class="row mb-5">
+    <div class="col">
       <form method="post" action="{% url "login-page" %}">
 	{% csrf_token %}
-	<h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 	{% if form.errors %}
 	<div class="alert alert-danger">
 	  <p>{{form.non_field_errors}}</p>
-	</div>
-	{% endif %}
-	{% if user.is_authenticated %}
-	<div class="alert alert-warning">
-	  <strong>Note:</strong> You are already logged in as {{user.get_full_name}}.
 	</div>
 	{% endif %}
 	<div class="form-group">
@@ -29,7 +40,7 @@
 	  <label for="{{form.password.id_for_label}}">Password:</label>
 	  {{form.password}}
 	</div>
-	<button class="btn btn-primary btn-lg" type="submit">Sign in</button>
+	<button class="btn btn-{% if EMFSSO_ENABLED %}secondary{% else %}primary{% endif %} btn-lg" type="submit">Sign in{% if EMFSSO_ENABLED %} with username and password{% endif %}</button>
 	<input type="hidden" name="next" value="{{ next|escape }}">
       </form>
     </div>

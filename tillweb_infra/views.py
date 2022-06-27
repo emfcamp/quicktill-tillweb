@@ -1,22 +1,30 @@
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django import forms
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth import login
+from django.contrib.auth.models import User, Permission, Group
 from django.db import IntegrityError
 from django.contrib import messages
 from django.conf import settings
 
 from django.urls import reverse
 
-def index(request):
-    return render(request, "index.html", {'pubname': settings.TILLWEB_PUBNAME})
+import requests
+from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2.rfc6749.errors import OAuth2Error
+
+EMFSSO_AUTH_URL = 'https://identity.emfcamp.org/oauth2/authorize'
+EMFSSO_TOKEN_URL = 'https://identity.emfcamp.org/oauth2/token'
+EMFSSO_USERINFO_URL = 'https://identity.emfcamp.org/oauth2/userinfo'
+
 
 @login_required
 def userprofile(request):
     may_edit_users = request.user.has_perm("auth.add_user")
     return render(request, "registration/profile.html",
                   {'may_edit_users': may_edit_users})
+
 
 class PasswordChangeForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,
@@ -38,6 +46,7 @@ class PasswordChangeForm(forms.Form):
             pass
         return self.cleaned_data
 
+
 @login_required
 def pwchange(request):
     if request.method == 'POST':
@@ -57,6 +66,7 @@ def pwchange(request):
         form = PasswordChangeForm()
     return render(request, 'registration/password-change.html',
                   context={'form': form})
+
 
 class UserForm(forms.Form):
     username = forms.CharField(label="Username")
@@ -83,6 +93,7 @@ class UserForm(forms.Form):
         except KeyError:
             pass
         return self.cleaned_data
+
 
 @permission_required("auth.add_user")
 def users(request):
@@ -115,6 +126,7 @@ def users(request):
 
     return render(request, 'registration/userlist.html',
                   {'users': u, 'form': form})
+
 
 @permission_required("auth.add_user")
 def userdetail(request, userid):
@@ -174,3 +186,103 @@ def userdetail(request, userid):
 
     return render(request, 'registration/userdetail.html',
                   {'form': form, 'formuser': u})
+
+
+# When developing the EMF SSO integration locally, you must set the
+# environment variable OAUTHLIB_INSECURE_TRANSPORT=1
+def _emfsso_session(request, state=None):
+    kwargs = {}
+    if state:
+        kwargs['state'] = state
+
+    return OAuth2Session(
+        settings.EMFSSO_CLIENT_ID,
+        redirect_uri=request.build_absolute_uri(reverse("emfsso-callback")),
+        scope=["profile"], **kwargs)
+
+
+def emfsso_login(request):
+    if not settings.EMFSSO_ENABLED:
+        messages.error(request, "EMF SSO is not configured")
+        return redirect("login-page")
+
+    session = _emfsso_session(request)
+
+    authorization_url, request.session['emfsso-auth-state'] = \
+        session.authorization_url(EMFSSO_AUTH_URL)
+
+    request.session['emfsso-next'] = request.GET.get('next')
+
+    return redirect(authorization_url)
+
+
+def emfsso_callback(request):
+    if not request.session.get('emfsso-auth-state'):
+        messages.error(request, "EMF SSO callback called unexpectedly")
+        return redirect("login-page")
+
+    session = _emfsso_session(
+        request, state=request.session['emfsso-auth-state'])
+
+    _next = request.session.get('emfsso-next')
+
+    try:
+        token = session.fetch_token(
+            EMFSSO_TOKEN_URL,
+            client_id=settings.EMFSSO_CLIENT_ID,
+            client_secret=settings.EMFSSO_CLIENT_SECRET,
+            authorization_response=request.build_absolute_uri())
+    except OAuth2Error as e:
+        messages.error(request, f"EMF SSO error: {e}")
+        return redirect("login-page")
+
+    del request.session['emfsso-auth-state'], request.session['emfsso-next']
+
+    profile = session.get(EMFSSO_USERINFO_URL).json()
+
+    username = profile['nickname']
+    groups = profile['groups']
+    email = profile['email']
+    full_name = profile['name']
+
+    if "team_bar" not in groups:
+        messages.error(request, "EMF SSO: You are not a member of Team Bar")
+        return redirect("login-page")
+
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create_user(username)
+
+    user.is_staff = True
+    user.is_active = True
+
+    user.email = email
+    # This is horrible; it's a consequence of names being split into
+    # first_name and last_name in the django User model.
+    names = full_name.rsplit(' ', maxsplit=1)
+    if len(names) > 1:
+        user.first_name, user.last_name = names
+    else:
+        user.first_name = ''
+        user.last_name = full_name
+    user.save()
+
+    try:
+        bar_group = Group.objects.get(name="Bar")
+        user.groups.add(bar_group)
+    except Group.DoesNotExist:
+        messages.warning(request, "Could not add user to group 'Bar': the "
+                         "group does not exist")
+
+    login(request, user)
+    messages.info(request, f"Logged in as {user} via EMF SSO")
+
+    # This flag is inserted into template contexts by the emfsso_user
+    # context processor. It can be used to disable "change password"
+    # links, etc.
+    request.session["emfsso-user"] = True
+
+    if _next:
+        return HttpResponseRedirect(_next)
+    return redirect("frontpage")

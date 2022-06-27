@@ -23,6 +23,16 @@ with open(BASE_DIR / 'config' / 'secret_key') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# EMF SSO from identity.emfcamp.org
+try:
+    with open(BASE_DIR / 'config' / 'oauth2_client_id') as f:
+        EMFSSO_CLIENT_ID = f.readline().strip()
+    with open(BASE_DIR / 'config' / 'oauth2_client_secret') as f:
+        EMFSSO_CLIENT_SECRET = f.readline().strip()
+    EMFSSO_ENABLED = True
+except Exception:
+    EMFSSO_ENABLED = False
+
 ALLOWED_HOSTS = ["*"]
 
 SITE_ID = 1
@@ -75,6 +85,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'tillweb_infra.context_processors.pubname_setting',
+                'tillweb_infra.context_processors.emfsso_user',
             ],
         },
     },

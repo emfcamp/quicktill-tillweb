@@ -65,7 +65,9 @@
 	  {{ user.get_full_name }}
 	</button>
 	<div class="dropdown-menu dropdown-menu-right" aria-labelledby="TopNavbarUserDropdown">
+	  {% if not EMFSSO_USER %}
 	  <a class="dropdown-item" href="{% url "password-change-page" %}">Change password</a>
+	  {% endif %}
 	  <a class="dropdown-item" href="{% url "logout-page" %}">Log out</a>
 	</div>
       </div>
