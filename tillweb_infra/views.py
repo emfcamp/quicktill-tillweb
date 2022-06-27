@@ -13,6 +13,7 @@ from django.urls import reverse
 import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2.rfc6749.errors import OAuth2Error
+from urllib.parse import urlparse, urljoin
 
 EMFSSO_AUTH_URL = 'https://identity.emfcamp.org/oauth2/authorize'
 EMFSSO_TOKEN_URL = 'https://identity.emfcamp.org/oauth2/token'
@@ -211,7 +212,19 @@ def emfsso_login(request):
     authorization_url, request.session['emfsso-auth-state'] = \
         session.authorization_url(EMFSSO_AUTH_URL)
 
-    request.session['emfsso-next'] = request.GET.get('next')
+    _next = request.GET.get('next')
+    # Check that _next is sensible before storing it for use after the
+    # oauth2 callback
+    if _next:
+        base = request.build_absolute_uri()
+        ref_url = urlparse(base)
+        test_url = urlparse(urljoin(base, _next))
+        if test_url.scheme in ("http", "https") \
+           and ref_url.netloc == test_url.netloc:
+            request.session['emfsso-next'] = _next
+        else:
+            messages.error(request, "Invalid 'next' field in query string")
+            return redirect("login-page")
 
     return redirect(authorization_url)
 
