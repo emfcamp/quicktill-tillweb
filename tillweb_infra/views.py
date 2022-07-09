@@ -249,7 +249,8 @@ def emfsso_callback(request):
         messages.error(request, f"EMF SSO error: {e}")
         return redirect("login-page")
 
-    del request.session['emfsso-auth-state'], request.session['emfsso-next']
+    del request.session['emfsso-auth-state']
+    request.session.pop('emfsso-next', None)
 
     profile = session.get(EMFSSO_USERINFO_URL).json()
 
@@ -263,7 +264,9 @@ def emfsso_callback(request):
     except User.DoesNotExist:
         user = User.objects.create_user(username)
 
-    user.is_staff = True
+    if "team_bar" in groups:
+        user.is_staff = True
+
     user.is_active = True
 
     user.email = email
@@ -277,12 +280,13 @@ def emfsso_callback(request):
         user.last_name = full_name
     user.save()
 
-    try:
-        bar_group = Group.objects.get(name="Bar")
-        user.groups.add(bar_group)
-    except Group.DoesNotExist:
-        messages.warning(request, "Could not add user to group 'Bar': the "
-                         "group does not exist")
+    if "team_bar" in groups:
+        try:
+            bar_group = Group.objects.get(name="Bar")
+            user.groups.add(bar_group)
+        except Group.DoesNotExist:
+            messages.warning(request, "Could not add user to group 'Bar': the "
+                             "group does not exist")
 
     login(request, user)
     messages.info(request, f"Logged in as {user} via EMF SSO")
