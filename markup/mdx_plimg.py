@@ -100,7 +100,7 @@ class PLImgTreeprocessor(markdown.treeprocessors.Treeprocessor):
         return root
 
 class PLImgExtension(markdown.Extension):
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         tp = PLImgTreeprocessor(md)
         tp.ext = self
-        md.treeprocessors['plimg'] = tp
+        md.treeprocessors.register(tp, 'plimg', 175)
