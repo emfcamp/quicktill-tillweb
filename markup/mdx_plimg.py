@@ -4,14 +4,15 @@
 
 import markdown
 from photologue.models import Photo
-from django.utils.http import urlquote
 from sorl.thumbnail import get_thumbnail
 import os.path
 from copy import deepcopy
 
+
 def _res(f, rs):
     fn, ext = os.path.splitext(f)
     return f"{fn}@{rs}{ext}"
+
 
 def update_img_tag(t):
     """The image source is a colon-separated string.  The first element
@@ -57,7 +58,8 @@ def update_img_tag(t):
             imgclass.append(p)
     im = get_thumbnail(photo.image, size, **options)
     t.set("src", im.url)
-    t.set("srcset", f"{im.url}, {_res(im.url, '1.5x')} 1.5x, {_res(im.url, '2x')} 2x")
+    t.set("srcset", f"{im.url}, {_res(im.url, '1.5x')} 1.5x, "
+          f"{_res(im.url, '2x')} 2x")
     if imgclass:
         t.set("class", ' '.join(imgclass))
     t.set("width", str(im.width))
@@ -86,6 +88,7 @@ def find_img_tags(element):
             update_img_tag(child)
         find_img_tags(child)
 
+
 def convert_hr_to_clear(element):
     for child in element:
         if child.tag == "hr":
@@ -93,11 +96,13 @@ def convert_hr_to_clear(element):
             child.set("class", "clearboth")
         convert_hr_to_clear(child)
 
+
 class PLImgTreeprocessor(markdown.treeprocessors.Treeprocessor):
     def run(self, root):
         find_img_tags(root)
         convert_hr_to_clear(root)
         return root
+
 
 class PLImgExtension(markdown.Extension):
     def extendMarkdown(self, md):

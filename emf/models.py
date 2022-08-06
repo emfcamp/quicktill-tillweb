@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 import markdown as markdown_module
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from django.conf import settings
 from .tilldb import tillsession
 from .display import displays
 
@@ -147,7 +146,7 @@ class DisplayPage(models.Model):
 
     def as_dict(self):
         return {
-            'name' : self.slug,
+            'name': self.slug,
             'header': self.title,
             'content': self.render_content,
             'duration': self.display_time,

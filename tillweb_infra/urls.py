@@ -3,13 +3,12 @@ from django.urls import path, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from tillweb_infra import views
-
-admin.autodiscover()
-admin.site.site_header = "Till administration"
-
 import photologue.urls
 import quicktill.tillweb.urls
 import emf.urls
+
+admin.autodiscover()
+admin.site.site_header = "Till administration"
 
 urlpatterns = [
     path('accounts/', include([

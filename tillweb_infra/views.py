@@ -1,4 +1,4 @@
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django import forms
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -10,7 +10,6 @@ from django.conf import settings
 
 from django.urls import reverse
 
-import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2.rfc6749.errors import OAuth2Error
 from urllib.parse import urlparse, urljoin
@@ -57,11 +56,11 @@ def pwchange(request):
             if request.user.check_password(cd['password']):
                 request.user.set_password(cd['newpassword'])
                 request.user.save()
-                messages.info(request,"Password changed")
+                messages.info(request, "Password changed")
                 return HttpResponseRedirect(
                     reverse("user-profile-page"))
             else:
-                messages.info(request,"Incorrect password - changes not made")
+                messages.info(request, "Incorrect password — changes not made")
             return HttpResponseRedirect(reverse("password-change-page"))
     else:
         form = PasswordChangeForm()
@@ -240,7 +239,7 @@ def emfsso_callback(request):
     _next = request.session.get('emfsso-next')
 
     try:
-        token = session.fetch_token(
+        session.fetch_token(
             EMFSSO_TOKEN_URL,
             client_id=settings.EMFSSO_CLIENT_ID,
             client_secret=settings.EMFSSO_CLIENT_SECRET,

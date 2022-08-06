@@ -1,7 +1,9 @@
 # Display screens for the bar
 from django.template.loader import render_to_string
-from quicktill.models import *
-from .tilldb import *
+from .tilldb import on_tap, booziness
+from quicktill.models import StockType, Unit
+from sqlalchemy.orm import undefer
+from sqlalchemy.sql import func, desc
 from math import floor
 
 displays = {}
@@ -41,13 +43,13 @@ class CansAndBottles(Display):
              .filter(StockType.abv != None)\
              .options(undefer('remaining'))\
              .order_by(StockType.manufacturer, StockType.name)\
-             .all()
+             .all()  # noqa E711
 
         self.text = render_to_string(
             'emf/display-cans-and-bottles.html',
             context={'types': r,
                      'num_types': len(r),
-            })
+                     })
 
 
 class Wines(Display):
@@ -70,7 +72,7 @@ class Wines(Display):
                 .filter(StockType.abv != None)\
                 .options(undefer('remaining'))\
                 .order_by(StockType.manufacturer, StockType.name)\
-                .all()
+                .all()  # noqa E711
 
         self.text = render_to_string(
             'emf/display-wines.html',
@@ -118,19 +120,20 @@ class SpiritsAndMixers(Display):
                    .order_by(StockType.manufacturer, StockType.name)\
                    .all()
 
-        soft = s.query(StockType, StockType.remaining / StockType.total * 100.0)\
+        soft = s.query(
+            StockType, StockType.remaining / StockType.total * 100.0)\
                 .filter(StockType.dept_id == 70)\
                 .filter(StockType.remaining > 0.0)\
                 .options(undefer('remaining'))\
                 .order_by(StockType.manufacturer, StockType.name)\
-                .all()
+                .all()  # noqa E127
 
         self.text = render_to_string(
             'emf/display-spirits-and-mixers.html',
             context={'spirits': spirits,
                      'soft': soft,
                      'num_items': len(spirits) + len(soft),
-            })
+                     })
 
 
 class ClubMate(Display):
@@ -152,7 +155,8 @@ class SoftDrinks(Display):
     description = "Soft drinks"
 
     def __init__(self, s):
-        soft = s.query(StockType, StockType.remaining / StockType.total * 100.0)\
+        soft = s.query(
+            StockType, StockType.remaining / StockType.total * 100.0)\
                 .filter(StockType.dept_id == 70)\
                 .filter(StockType.remaining > 0.0)\
                 .options(undefer('remaining'))\
@@ -195,17 +199,17 @@ class ProgressFacts(Display):
             'emf/display-bar-fun-facts.html',
             context={
                 'info': info, 'alcohol_used': alcohol_used,
-		'alcohol_used_litres': floor(alcohol_used / 1000.0),
+                'alcohol_used_litres': floor(alcohol_used / 1000.0),
                 'total_alcohol': total_alcohol,
                 'alcohol_used_pct': alcohol_used_pct,
                 'alcohol_used_pct_remainder': 100.0 - alcohol_used_pct,
-		'elephants_drunk': floor(alcohol_used / 1890.0),
-		'drink_drive': floor(alcohol_used / 35),
-		'shots': shots,
-		'shottime': floor(shots / 30),
-		'cars': floor(alcohol_used / 1250),
-		'scots': alcohol_used / 10000.0,
-		'libyans': alcohol_used / 0.027
+                'elephants_drunk': floor(alcohol_used / 1890.0),
+                'drink_drive': floor(alcohol_used / 35),
+                'shots': shots,
+                'shottime': floor(shots / 30),
+                'cars': floor(alcohol_used / 1250),
+                'scots': alcohol_used / 10000.0,
+                'libyans': alcohol_used / 0.027
             })
 
 

@@ -1,29 +1,23 @@
 from django.db.models import Q
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import subqueryload, subqueryload_all
-from sqlalchemy.orm import joinedload, joinedload_all
-from sqlalchemy.orm import lazyload
-from sqlalchemy.orm import defaultload
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm import undefer, defer, undefer_group
-from sqlalchemy import distinct
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import undefer
 from sqlalchemy import func
 
 from decimal import Decimal
 
 import datetime
-import django.utils.timezone
 
 import emf.models
 
-from quicktill.models import *
-from .tilldb import *
+from .tilldb import tillsession, booziness, on_tap
+from quicktill.models import RefusalsLog, StockType, Unit, Department, Payment
+
 
 def current_time():
     # Override this when testing!
@@ -95,10 +89,12 @@ def refusals(request):
              .options(joinedload('user'))\
              .order_by(RefusalsLog.id)\
              .all()
-        return render(request, 'emf/refusals.html',
-                      context={'refusals': r,
-                               'dtf': dtf,
-                      })
+        return render(
+            request, 'emf/refusals.html',
+            context={
+                'refusals': r,
+                'dtf': dtf,
+            })
 
 
 def display(request, page=None):
@@ -123,13 +119,13 @@ def display_info(request):
         enabled=True,
         condition__in=('A', 'O' if currently_open else 'C')).all()
 
-    urgent = [ p for p in pages if p.priority == 'U' ]
+    urgent = [p for p in pages if p.priority == 'U']
 
     if urgent:
         # The only pages are urgent pages
-        pages = [ p.as_dict() for p in urgent ]
+        pages = [p.as_dict() for p in urgent]
     else:
-        pages = [ p.as_dict() for p in pages ]
+        pages = [p.as_dict() for p in pages]
 
     if not pages:
         # Display is blank!
@@ -196,18 +192,20 @@ def frontpage(request):
         sessions = emf.models.Session.objects.filter(
             closing_time__gt=current_time())
 
-        return render(request, "emf/whatson.html",
-                      {"info": info,
-                       "alcohol_used": alcohol_used,
-                       "total_alcohol": total_alcohol,
-                       "alcohol_used_pct": alcohol_used_pct,
-                       "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
-                       "sessions": sessions,
-                       "ales": ales,
-                       "kegs": kegs,
-                       "ciders": ciders,
-                       "content": content,
-                      })
+        return render(
+            request, "emf/whatson.html",
+            context={
+                "info": info,
+                "alcohol_used": alcohol_used,
+                "total_alcohol": total_alcohol,
+                "alcohol_used_pct": alcohol_used_pct,
+                "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
+                "sessions": sessions,
+                "ales": ales,
+                "kegs": kegs,
+                "ciders": ciders,
+                "content": content,
+            })
 
 
 def pricelist(request):
@@ -221,9 +219,12 @@ def pricelist(request):
             .filter(StockType.remaining > 0.0)\
             .all()
 
-        return render(request, "emf/pricelist.html",
-                      {"products": products,
-                      })
+        return render(
+            request, "emf/pricelist.html",
+            context={
+                "products": products,
+            })
+
 
 def jontyfacts(request):
     from quicktill.models import StockItem, StockType, Unit, StockOut, User
@@ -266,20 +267,21 @@ def jontyfacts(request):
         return render(request, "emf/jontyfacts.html",
                       {"pints_sold": pints_sold,
                        "total_pints": total_pints,
-                       "volunteers": volunteers - 1, # remove 1 for "shop"
+                       "volunteers": volunteers - 1,  # remove 1 for "shop"
                        "card_payments": card_payments,
                        "cash_payments": cash_payments,
                        "card_roll_used": card_roll_used,
                        "club_mate": club_mate,
                        })
 
+
 # API views that do not access the till database
 def api_sessions(request):
     sessions = emf.models.Session.objects.all()
-    return JsonResponse(
-        {'sessions': [
-            { k: getattr(s, k) for k in ('opening_time', 'closing_time') }
-            for s in sessions ],
+    return JsonResponse({
+        'sessions': [
+            {k: getattr(s, k) for k in ('opening_time', 'closing_time')}
+            for s in sessions],
         })
 
 
@@ -288,8 +290,8 @@ def api_progress(request):
         alcohol_used, total_alcohol, alcohol_used_pct = booziness(s)
         info = EventInfo(current_time())
 
-        return JsonResponse(
-            {'licensed_time_pct': info.completed_pct,
-             'expected_consumption_pct': info.expected_consumption_pct,
-             'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
-            })
+        return JsonResponse({
+            'licensed_time_pct': info.completed_pct,
+            'expected_consumption_pct': info.expected_consumption_pct,
+            'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
+        })

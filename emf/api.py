@@ -1,5 +1,6 @@
-import emf.models
-from .tilldb import *
+from .tilldb import tillsession, on_tap
+from quicktill.models import StockType, Unit, Department, PriceLookup
+from sqlalchemy.orm import undefer, joinedload
 from django.http import JsonResponse, Http404
 
 
@@ -71,24 +72,25 @@ def stocktype_query(s):
 
 # Views
 
+
 def departments(request):
     with tillsession() as s:
         depts = s.query(Department).order_by(Department.id).all()
 
-        return JsonResponse(
-            {'departments': [ department_to_dict(d) for d in depts ],
-            })
+        return JsonResponse({
+            'departments': [department_to_dict(d) for d in depts],
+        })
 
 
 def api_on_tap(request):
     with tillsession() as s:
         ales, kegs, ciders = on_tap(s)
 
-        return JsonResponse(
-            {'ales': [ stockitem_to_dict(ale, rf) for ale, rf in ales ],
-             'kegs': [ stockitem_to_dict(keg, rf) for keg, rf in kegs ],
-             'ciders': [ stockitem_to_dict(cider, rf) for cider, rf in ciders ],
-            })
+        return JsonResponse({
+            'ales': [stockitem_to_dict(ale, rf) for ale, rf in ales],
+            'kegs': [stockitem_to_dict(keg, rf) for keg, rf in kegs],
+            'ciders': [stockitem_to_dict(cider, rf) for cider, rf in ciders],
+        })
 
 
 def cybar(request):
@@ -99,7 +101,7 @@ def cybar(request):
             .all()
 
         return JsonResponse({
-            'cybar': [ stocktype_to_dict(st) for st in stocktypes ],
+            'cybar': [stocktype_to_dict(st) for st in stocktypes],
         })
 
 
@@ -107,9 +109,9 @@ def stock(request):
     with tillsession() as s:
         stocktypes = stocktype_query(s).all()
 
-        return JsonResponse(
-            {'stocktypes': [ stocktype_to_dict(st) for st in stocktypes ],
-             })
+        return JsonResponse({
+            'stocktypes': [stocktype_to_dict(st) for st in stocktypes],
+        })
 
 
 def shop(request):
@@ -121,9 +123,9 @@ def shop(request):
                 .order_by(PriceLookup.description)\
                 .all()
 
-        return JsonResponse(
-            {'shop': [ plu_to_dict(plu) for plu in plus ],
-            })
+        return JsonResponse({
+            'shop': [plu_to_dict(plu) for plu in plus],
+        })
 
 
 def dept(request, dept_id):
@@ -132,9 +134,9 @@ def dept(request, dept_id):
             .filter(StockType.dept_id == dept_id)\
             .all()
 
-        return JsonResponse(
-            {'stocktypes': [ stocktype_to_dict(st) for st in stocktypes ],
-             })
+        return JsonResponse({
+            'stocktypes': [stocktype_to_dict(st) for st in stocktypes],
+        })
 
 
 def stocktype(request, stocktype_id):

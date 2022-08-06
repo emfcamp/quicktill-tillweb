@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from django.urls import reverse
-from .models import *
-from django.contrib.auth.models import User
-
+from .models import Page
 import re
 
 page_re = re.compile(r'^/([\w|/]+)/$')
+
 
 class PagesFallbackMiddleware:
     def __init__(self, get_response):

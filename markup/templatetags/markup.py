@@ -8,8 +8,7 @@ ipladmin application, so we don't worry about using it.
 """
 
 from django import template
-from django.conf import settings
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 import markdown as markdown_module
 
@@ -18,7 +17,9 @@ markdown_extensions = [
     "def_list",
 ]
 
+
 register = template.Library()
+
 
 @register.filter(is_safe=True)
 def markdown(value, arg=''):
@@ -36,15 +37,17 @@ def markdown(value, arg=''):
             force_text(value),
             extensions=markdown_extensions))
 
+
 @register.tag(name="markdown")
 def markdown_tag(parser, token):
     nodelist = parser.parse(('endmarkdown',))
     bits = token.split_contents()
     if len(bits) != 1:
-        raise template.TemplateSyntaxError("`markdown` tag requires exactly "
-            "zero arguments")
+        raise template.TemplateSyntaxError(
+            "`markdown` tag requires exactly zero arguments")
     parser.delete_first_token()
     return MarkdownNode(nodelist)
+
 
 class MarkdownNode(template.Node):
     def __init__(self, nodelist):
