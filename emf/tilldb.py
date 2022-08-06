@@ -1,6 +1,8 @@
 from contextlib import contextmanager
 from django.conf import settings
 from quicktill.models import *
+from sqlalchemy.orm import undefer
+
 
 # Monkeypatch the StockType class to have a "total" column so we can
 # easily read total amounts of stuff ordered
