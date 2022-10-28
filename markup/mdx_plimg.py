@@ -101,11 +101,9 @@ class PLImgTreeprocessor(markdown.treeprocessors.Treeprocessor):
     def run(self, root):
         find_img_tags(root)
         convert_hr_to_clear(root)
-        return root
 
 
 class PLImgExtension(markdown.Extension):
     def extendMarkdown(self, md):
         tp = PLImgTreeprocessor(md)
-        tp.ext = self
-        md.treeprocessors.register(tp, 'plimg', 175)
+        md.treeprocessors.register(tp, 'plimg', 20)
