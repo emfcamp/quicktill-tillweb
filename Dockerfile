@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.10
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends libcups2-dev
 RUN apt-get clean

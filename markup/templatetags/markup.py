@@ -8,7 +8,7 @@ ipladmin application, so we don't worry about using it.
 """
 
 from django import template
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 import markdown as markdown_module
 
@@ -34,7 +34,7 @@ def markdown(value, arg=''):
     """
     return mark_safe(
         markdown_module.markdown(
-            force_text(value),
+            force_str(value),
             extensions=markdown_extensions))
 
 
