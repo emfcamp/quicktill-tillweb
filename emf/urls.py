@@ -1,9 +1,11 @@
 from django.urls import path
+from django.views.generic.base import RedirectView
 from emf import views
 from emf import api
 
 urls = [
     path('', views.frontpage, name="frontpage"),
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),
     path('prices/', views.pricelist, name="pricelist"),
     path('refusals/', views.refusals, name="refusals"),
     path('display/', views.display, name="display"),
@@ -11,6 +13,9 @@ urls = [
     path('display/<page>/', views.display, name="display-page"),
     path('display/<page>/info.json', views.display_page_info,
          name="display-page-info"),
+
+    path('tapboard/', views.tapboard, name="tapboard"),
+    path('tapboard/sw.js', views.tapboard_sw, name="tapboard-sw"),
 
     path('jontyfacts/', views.jontyfacts, name="jontyfacts"),
 
@@ -24,4 +29,7 @@ urls = [
     path('api/department/<int:dept_id>.json', api.dept, name="api-dept"),
     path('api/stocktype/<int:stocktype_id>.json', api.stocktype,
          name="api-stocktype"),
+    path('api/stocklines.json', api.stocklines, name="api-stocklines"),
+    path('api/stockline/<int:stockline_id>/set-note/', api.stockline_set_note,
+         name="api-stockline-set-note"),
 ]

@@ -33,6 +33,13 @@ try:
 except Exception:
     EMFSSO_ENABLED = False
 
+# Password to set stockline note via API
+try:
+    with open(BASE_DIR / 'config' / 'line_note_password') as f:
+        LINE_NOTE_PASSWORD = f.readline().strip()
+except Exception:
+    LINE_NOTE_PASSWORD = None
+
 ALLOWED_HOSTS = ["*"]
 
 SITE_ID = 1

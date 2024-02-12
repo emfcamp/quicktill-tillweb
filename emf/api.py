@@ -1,60 +1,15 @@
 from .tilldb import tillsession, on_tap
+import json
 from quicktill.models import StockType, Unit, Department, PriceLookup
+from quicktill.models import StockLine
 from sqlalchemy.orm import undefer, joinedload
-from django.http import JsonResponse, Http404
-
-
-# Convert various till models to dicts to output as json
-
-def department_to_dict(d):
-    return {
-        'id': d.id,
-        'description': d.description,
-        'notes': d.notes,
-    }
-
-
-def stocktype_to_dict(s):
-    return {
-        'id': s.id,
-        'department': department_to_dict(s.department),
-        'manufacturer': s.manufacturer,
-        'name': s.name,
-        'abv': s.abv,
-        'fullname': format(s),
-        'price': s.saleprice,
-        'base_units_bought': s.total,
-        'base_units_remaining': s.remaining,
-        'base_unit': s.unit.name,
-        'sale_unit': s.unit.item_name,
-        'base_units_per_sale_unit': s.unit.units_per_item,
-    }
-
-
-def stockitem_to_dict(s, remain_fraction=None):
-    d = {
-        'id': s.id,
-        'stocktype_id': s.stocktype_id,
-        'manufacturer': s.stocktype.manufacturer,
-        'name': s.stocktype.name,
-        'abv': s.stocktype.abv,
-        'fullname': format(s.stocktype),
-        'price': s.stocktype.saleprice,
-        'remaining_pct': None,
-    }
-    if remain_fraction is not None:
-        d['remaining_pct'] = remain_fraction * 100
-    return d
-
-
-def plu_to_dict(plu):
-    return {
-        'id': plu.id,
-        'description': plu.description,
-        'note': plu.note,
-        'department': department_to_dict(plu.department),
-        'price': plu.price,
-    }
+from django.conf import settings
+from django.http import JsonResponse, Http404, HttpResponse
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.http import HttpResponseNotAllowed
+from django.views.decorators.csrf import csrf_exempt
+from .api_objects import department_to_dict, stocktype_to_dict, \
+    stockitem_to_dict, plu_to_dict, stockline_to_dict
 
 
 # Partial queries
@@ -62,12 +17,12 @@ def plu_to_dict(plu):
 def stocktype_query(s):
     return s.query(StockType)\
             .join(Unit)\
-            .filter(StockType.remaining > 0)\
+            .filter(StockType.total_remaining > 0)\
             .order_by(StockType.dept_id)\
             .order_by(StockType.manufacturer)\
             .order_by(StockType.name)\
             .options(undefer('total'))\
-            .options(undefer('remaining'))\
+            .options(undefer('total_remaining'))\
 
 
 # Views
@@ -144,10 +99,52 @@ def stocktype(request, stocktype_id):
         stocktype = s.query(StockType)\
                      .options(joinedload('unit'))\
                      .options(undefer('total'))\
-                     .options(undefer('remaining'))\
+                     .options(undefer('total_remaining'))\
                      .get(stocktype_id)
 
         if not stocktype:
             raise Http404
 
         return JsonResponse(stocktype_to_dict(stocktype))
+
+
+def stocklines(request):
+    with tillsession() as s:
+        q = s.query(StockLine)\
+             .options(joinedload("stockonsale"),
+                      joinedload("stockonsale.stocktype"),
+                      undefer("stockonsale.remaining"),
+                      undefer("stockonsale.stocktype.total_remaining"),
+                      undefer("stockonsale.stocktype.total"))\
+             .order_by(StockLine.location, StockLine.name)
+        if 'type' in request.GET:
+            q = q.filter(StockLine.linetype == request.GET['type'])
+        stocklines = q.all()
+
+        return JsonResponse({
+            'stocklines': [stockline_to_dict(sl) for sl in stocklines],
+        })
+
+
+# Private API method to allow tapboard to set the note on a stockline
+@csrf_exempt
+def stockline_set_note(request, stockline_id):
+    with tillsession() as s:
+        sl = s.query(StockLine).get(stockline_id)
+        if not sl:
+            raise Http404
+        if request.method != 'POST':
+            return HttpResponseNotAllowed(['POST'])
+        try:
+            req = json.loads(request.body)
+        except Exception:
+            return HttpResponseBadRequest("JSON required")
+        if settings.DEBUG:
+            password = "test"
+        else:
+            password = settings.LINE_NOTE_PASSWORD
+        if "password" not in req or not password or req['password'] != password:
+            return HttpResponseForbidden()
+        sl.note = req.get("note", "")
+        s.commit()
+        return HttpResponse("Note set")

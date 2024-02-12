@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from django.conf import settings
 from quicktill.models import StockType, StockItem, Delivery, Unit, StockLine
+from quicktill.models import StockOut
 from sqlalchemy.orm import undefer, column_property, contains_eager
 from sqlalchemy.sql import select, func, and_, text, case
 from decimal import Decimal
@@ -17,6 +18,27 @@ StockType.total = column_property(
     .label('total'),
     deferred=True,
     doc="Total amount booked in")
+
+# The regular "remaining" column on StockType excludes stock already
+# on sale on regular or display stock lines, because it's used to show
+# the amount remaining for continuous stock lines. Add a simpler
+# version that ignores whether stock is on sale.
+StockType.total_remaining = column_property(
+    select(
+        [func.coalesce(
+            func.sum(
+                StockItem.size - select(
+                    [func.coalesce(func.sum(StockOut.qty), text("0.0"))],
+                    StockOut.stockid == StockItem.id,
+                ).as_scalar()),
+            text("0.0"))],
+        and_(StockItem.stocktype_id == StockType.id,
+             StockItem.finished == None,  # noqa E711
+             StockItem.checked == True))  # noqa E712
+    .correlate(StockType.__table__)
+    .label('total_remaining'),
+    deferred=True,
+    doc="Amount remaining in stock")
 
 
 # Context manager for till database sessions

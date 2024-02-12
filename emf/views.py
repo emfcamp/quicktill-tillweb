@@ -226,6 +226,26 @@ def pricelist(request):
             })
 
 
+def tapboard(request):
+    if settings.DEBUG:
+        websocket_address = "ws://localhost:8001/"
+    else:
+        websocket_address = \
+            f"wss://{request.META['HTTP_HOST']}/tapboard/websocket/"
+    return render(request, "emf/tapboard.html", context={
+        "websocket_address": websocket_address,
+    })
+
+
+def tapboard_sw(request):
+    # The service worker needs to be scoped to '/' to allow it to access
+    # /static/whatever
+    response = render(request, "emf/tapboard-sw.js",
+                      content_type="text/javascript")
+    response.headers['Service-Worker-Allowed'] = '/'
+    return response
+
+
 def jontyfacts(request):
     from quicktill.models import StockItem, StockType, Unit, StockOut, User
     with tillsession() as s:
