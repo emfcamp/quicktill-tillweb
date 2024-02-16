@@ -68,7 +68,10 @@
 	  {% if not EMFSSO_USER %}
 	  <a class="dropdown-item" href="{% url "password-change-page" %}">Change password</a>
 	  {% endif %}
-	  <a class="dropdown-item" href="{% url "logout-page" %}">Log out</a>
+	  <form action="{% url "logout-page" %}" method="post">
+	    {% csrf_token %}
+	    <button type="submit" class="dropdown-item">Log out</button>
+	  </form>
 	</div>
       </div>
     </div>
