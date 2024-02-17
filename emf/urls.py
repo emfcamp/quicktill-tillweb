@@ -17,6 +17,8 @@ urls = [
     path('tapboard/', views.tapboard, name="tapboard"),
     path('tapboard/sw.js', views.tapboard_sw, name="tapboard-sw"),
 
+    path('cellarboard/', views.cellarboard, name="cellarboard"),
+
     path('jontyfacts/', views.jontyfacts, name="jontyfacts"),
 
     path('api/sessions.json', views.api_sessions, name="api-sessions"),

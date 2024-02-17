@@ -246,6 +246,17 @@ def tapboard_sw(request):
     return response
 
 
+def cellarboard(request):
+    if settings.DEBUG:
+        websocket_address = "ws://localhost:8001/"
+    else:
+        websocket_address = \
+            f"wss://{request.META['HTTP_HOST']}/tapboard/websocket/"
+    return render(request, "emf/cellarboard.html", context={
+        "websocket_address": websocket_address,
+    })
+
+
 def jontyfacts(request):
     from quicktill.models import StockItem, StockType, Unit, StockOut, User
     with tillsession() as s:

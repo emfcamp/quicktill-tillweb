@@ -139,3 +139,7 @@ table thead.sub th {
     padding-top: 12pt;
     border-bottom: unset;
 }
+
+table.large {
+    font-size: 21pt;
+}

@@ -113,12 +113,16 @@ def stocklines(request):
         q = s.query(StockLine)\
              .options(joinedload("stockonsale"),
                       joinedload("stockonsale.stocktype"),
+                      joinedload("stockonsale.stocktype.meta"),
                       undefer("stockonsale.remaining"),
                       undefer("stockonsale.stocktype.total_remaining"),
                       undefer("stockonsale.stocktype.total"))\
              .order_by(StockLine.location, StockLine.name)
         if 'type' in request.GET:
-            q = q.filter(StockLine.linetype == request.GET['type'])
+            q = q.filter(StockLine.linetype.in_(request.GET.getlist('type')))
+        if 'location' in request.GET:
+            q = q.filter(StockLine.location.in_(
+                request.GET.getlist('location')))
         stocklines = q.all()
 
         return JsonResponse({
