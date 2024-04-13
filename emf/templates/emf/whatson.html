@@ -6,12 +6,12 @@
 <h1>The Robot Arms</h1>
 {% if info.open %}
 <div class="status open">
-  <h2>OPEN</h2>
+  <h2>Open</h2>
   <p>Closing at {{ info.closes_at|date:"H:i" }}</p>
 </h2>
 {% else %}
 <div class="status closed">
-  <h2>CLOSED</h2>
+  <h2>Closed</h2>
   {% if info.next_open %}
   <p>Opening {{ info.next_open|date:"l H:i" }}</p>
   {% else %}
