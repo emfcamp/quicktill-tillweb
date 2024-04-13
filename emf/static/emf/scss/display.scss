@@ -5,6 +5,7 @@
 
 $background: #afc944;
 $foreground: #213018;
+$highlight: #f55089;
 
 body {
 	background: $foreground url('/static/emf/img/bg.png');
@@ -60,7 +61,7 @@ body {
 	#content {
 		display: flex;
 		flex-direction: column;
-		flex-grow: 10;
+		flex-grow: 20;
 		flex-basis: auto;
 
 		h2 {
@@ -70,7 +71,27 @@ body {
 
 	#page {
 		flex: 1;
-		font-size: 18pt;
+		text-align: center;
+		
+		display: flex;
+		flex-direction: row;
+
+		span {
+			flex: 1;
+			background-color: $foreground;
+			margin-left: .5em;
+			height: .25em;
+		
+			transition: background-color .25s;
+
+			&:first-child {
+				margin-left: 0;
+			}
+
+			&.current {
+				background-color: $highlight;
+			}
+		}
 	}
 }
 

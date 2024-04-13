@@ -141,6 +141,8 @@ def display_info(request):
             'content': ' ',
             'duration': 5000 if settings.DEBUG else 30000,
             'page': 'Idle',
+            'count': 0,
+            'current': 0,
         })
 
     current = request.GET.get("current", "start")
@@ -157,6 +159,9 @@ def display_info(request):
     page = pages[pagenum]
     page['page'] = f"Page {pagenum + 1} of {len(pages)}" \
         if len(pages) > 1 else ""
+
+    page['count'] = len(pages)
+    page['current'] = pagenum
 
     if callable(page['content']):
         page['content'] = page['content']()

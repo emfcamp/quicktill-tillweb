@@ -30,13 +30,12 @@ function sleep(ms) {
 			if (fade) {
 				header.style.opacity = "0";
 				content.style.opacity = "0";
-				page.style.opacity = "0";
 				await sleep(fadeTime + waitTime);
 			}
 
 			header.innerText = new_header;
 			content.innerHTML = new_content;
-			page.innerText = new_page;
+
 			current_header = new_header;
 			current_content = new_content;
 			current_page = new_page;
@@ -44,15 +43,39 @@ function sleep(ms) {
 			if (fade) {
 				header.style.opacity = "1";
 				content.style.opacity = "1";
-				page.style.opacity = "1";
 				await sleep(fadeTime);
 			}
 		}
 	}
 
+	async function pageNumbers(json) {
+		const pageElm = document.querySelector('#page');
+		const pages = document.querySelectorAll('#page span');
+
+		// Remove current
+		if (document.querySelector('#page .current')) {
+			document.querySelector('#page .current').classList.remove('current')
+		}
+
+		// Update if page numbers change
+		if (pages && pages.length != json.count) {
+			pageElm.innerHTML = '';
+			for (let i = 0; i < json.count; i++) {
+				const elm = document.createElement('span');
+				pageElm.append(elm);
+			}
+		}
+
+		// Add current
+		const pageNum = json.current
+		if (document.querySelectorAll('#page span')[pageNum])
+		document.querySelectorAll('#page span')[pageNum].classList.add('current')
+
+	}
+
 	while (true) {
-		var res;
-		var json;
+		let res;
+		let json;
 
 		try {
 			res = await fetch('info.json?current=' + current);
@@ -74,13 +97,15 @@ function sleep(ms) {
 			continue;
 		}
 
+		await pageNumbers(json);
+
 		await display(json.header || defaultHeader,
 			json.content || defaultContent,
 			json.page || "",
 			json.name != current);
 
 		current = json.name;
-
+		
 		await sleep(json.duration || defaultDisplayTime);
 	}
 })();
