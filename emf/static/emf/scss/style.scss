@@ -129,6 +129,30 @@ table {
 		}
 	} 
 
+	tbody {
+		.stock {
+			.orb {
+				background-color: black;
+				width: 0.6em;
+				height: 0.6em;
+				display: inline-block;
+				margin-right: 0.2em;
+				margin-bottom: 0.1em;
+				border-radius: 1em;
+
+				&.lastfew {
+					background-color: red;
+				}
+
+				&.plenty {
+					background-color: green;
+				}
+
+				&.low {
+					background-color: orange;
+				}
+			}
+		}
 
 		tr:nth-child(odd) {
 			background-color: rgba(0, 0, 0, 0.05);
@@ -145,6 +169,23 @@ table {
 		}
 	}
 
+	table {
+		tbody {
+			.stock {
+				text-align: center;
+
+				.text {
+					display: none;
+				}
+				.orb {
+					width: 1em;
+					height: 1em;
+					margin-bottom: -0.1em;
+					border-radius: 1em;
+				}
+			}
+		}
+	}
 }
 
 @media screen and ( max-width: 600px ) {
