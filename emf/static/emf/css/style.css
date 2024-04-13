@@ -8,7 +8,7 @@
 html, body { min-height: 100%; }
 
 body {
-	background: #020021 url( /static/emf/bg.png ) no-repeat;
+	background: #020021 url( /static/emf/img/bg.png ) no-repeat;
 	background-size: contain;
 	color: white;
 	font-size: 12pt;
@@ -18,7 +18,7 @@ body {
 }
 
 header {
-	background: url( /static/emf/logo.png ) no-repeat;
+	background: url( /static/emf/img/logo.png ) no-repeat;
 	background-size: contain;
 	display: table;
 	width: 100%;

@@ -16,7 +16,7 @@ p {
 }
 
 body {
-    background: #020021 url('/static/emf/display-bg.png');
+    background: #020021 url('/static/emf/img/display-bg.png');
     background-size: 2100px auto;
     color: white;
     font-size: 24pt;
