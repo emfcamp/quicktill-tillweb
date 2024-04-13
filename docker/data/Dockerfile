@@ -1,4 +1,4 @@
-FROM postgres:12-alpine as dumper
+FROM postgres:15-alpine as dumper
 COPY emfcamp2022-anonymised.sql /docker-entrypoint-initdb.d/
 RUN ["sed", "-i", "s/exec \"$@\"/echo \"skipping...\"/", "/usr/local/bin/docker-entrypoint.sh"]
 
@@ -9,5 +9,5 @@ ENV PGDATA=/data
 
 RUN ["/usr/local/bin/docker-entrypoint.sh", "postgres"]
 
-FROM postgres:12-alpine
+FROM postgres:15-alpine
 COPY --from=dumper /data $PGDATA
