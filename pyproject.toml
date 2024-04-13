@@ -31,6 +31,7 @@ sdnotify = "^0.3"
 websockets = "^12.0"
 
 [tool.poetry.dev-dependencies]
+django-sass = "^1.1.0"
 
 [tool.poetry.scripts]
 till2redis = "emf.till2redis:main"

@@ -57,8 +57,7 @@ directly.
 Afer updating dependencies you should run `docker compose build` again
 to rebuild the development images.
 
-Developing without docker
--------------------------
+#Developing without docker
 
 To develop without docker you will need a local installation of
 `poetry`, and a postgresql database called "emfcamp" with a till
@@ -74,3 +73,11 @@ Create/update the django database: `poetry run ./manage.py migrate`
 Create a superuser: `poetry run ./manage.py createsuperuser`
 
 Run the development server: `poetry run ./manage.py runserver`
+
+# Compiling CSS from SASS/SCSS
+
+One time compile:
+`docker compose run --rm app ./manage.py sass emf/static/emf/scss emf/static/emf/css`
+
+Watch the folder for changes (for development):
+`docker compose run --rm app ./manage.py sass emf/static/emf/scss emf/static/emf/css --watch`

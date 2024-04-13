@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
     'django_bootstrap_breadcrumbs',
+    'django_sass',
     'sorl.thumbnail',
     'widget_tweaks',
     'markup',
