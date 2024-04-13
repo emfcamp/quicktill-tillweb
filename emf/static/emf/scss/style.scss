@@ -1,16 +1,16 @@
-/* -*- coding: utf-8 -*- */
-
 @charset "UTF-8";
-
 @import url( '../fonts/fonts.css' );
 @import url( 'bargraph.css' );
+
+$background: #afc944;
+$foreground: #213018;
 
 html, body { min-height: 100%; }
 
 body {
-	background: #020021 url("/static/emf/img/bg.png") no-repeat;
+	background: $background;
 	background-size: contain;
-	color: white;
+	color: $foreground;
 	font-size: 12pt;
 	font-family: Raleway, sans-serif;
 	padding: 0;
@@ -18,7 +18,7 @@ body {
 }
 
 a:link, a:visited, a:hover {
-	color: white;
+	color: $foreground;
 }
 
 header {
@@ -45,10 +45,21 @@ header {
 			right: 30pt;
 
 			h2 {
-				background: white;
-				color: black;
+				background: $background;
+				color: $foreground;
 				border-radius: 0.25em;
+				border: 2px solid $foreground;
 				padding: .25em .5em;
+			}
+
+			&.closed h2 {
+				background-color: $background;
+				columns: $foreground;
+			}
+
+			&.open h2 {
+				background-color: $foreground;
+				color: white;
 			}
 		}
 
@@ -108,14 +119,6 @@ header {
 	margin-right: 0;
 }
 
-.status.closed h2 {
-	background-color: #C70039;
-}
-
-.status.open h2 {
-	background-color: #33FF80;
-}
-
 .alert-block {
 	border: 1px solid #5f1539;
 	border-radius: .25em;
@@ -135,16 +138,16 @@ table {
 	thead {
 		th {
 			text-align: left;
-			border-bottom: 1pt solid #5f1539;
 		}
-
+		
 		&.sub th {
+			font-weight: 600;
 			padding-top: 12pt;
-			border-bottom: unset;
+			border-bottom: 1px solid $foreground;
 		}
 	} 
 
 	tbody tr:nth-child(odd) {
-		background-color: rgba( 255, 255, 255, .1 );
+		background-color: rgba(0, 0, 0, 0.05);
 	}
 }
