@@ -1,145 +1,142 @@
 /* -*- coding: utf-8 -*- */
-
-@charset "UTF-8";
-
-@import url( 'fonts.css' );
-@import url( 'bargraph.css' );
-
-html, body { min-height: 100%; }
+@import url("../fonts/fonts.css");
+@import url("bargraph.css");
+html, body {
+  min-height: 100%;
+}
 
 body {
-	background: #020021 url( /static/emf/img/bg.png ) no-repeat;
-	background-size: contain;
-	color: white;
-	font-size: 12pt;
-	font-family: ralewayregular, sans-serif;
-	padding: 0;
-	margin: 2.5em;
-}
-
-header {
-	background: url( /static/emf/img/logo.png ) no-repeat;
-	background-size: contain;
-	display: table;
-	width: 100%;
-	height: 5%;
-	min-height: 7em;
-	margin-bottom: 2.5%;
-}
-
-header div {
-	display: table-cell;
-	text-align: center;
-}
-
-header div h1 {
-	text-align: center;
-	font-size: 2.5em;
-}
-
-@media screen and ( max-width: 1024px ) {
-	header {
-		background: none;
-	}
-
-	header div h1 {
-		text-align: left;
-	}
-}
-
-header div div.status {
-	position: absolute;
-	top: 15pt;
-	right: 30pt;
-}
-
-header div div.status h2 {
-	background: white;
-	color: black;
-	border-radius: 0.25em;
-	padding: .25em .5em;
-}
-
-@media screen and ( max-width: 600px ) {
-	header div div.status {
-		position: relative;
-		top: unset;
-		right: unset;
-	}
-}
-
-.split {
-	display: flex;
-}
-
-.split > div {
-	flex: 1 1 auto;
-	width: 50%;
-	margin: 0 1em;
-}
-
-.split > div.align-bottom {
-	margin-top: auto;
-}
-
-@media screen and ( max-width: 768px ) {
-	.split {
-		display: block;
-	}
-	.split > div {
-		width: 100%;
-		flex: unset;
-		margin: 0;
-	}
-}
-
-.split > div:first-child {
-	margin-left: 0;
-}
-
-.split > div:last-child {
-	margin-right: 0;
-}
-
-.status.closed h2 {
-	background-color: #C70039;
-}
-
-.status.open h2 {
-	background-color: #33FF80;
-}
-
-.alert-block {
-	border: 1px solid #5f1539;
-	border-radius: .25em;
-	background: rgb(95, 21, 57, 0.5);
-	padding: 1em;
+  background: #020021 url("/static/emf/img/bg.png") no-repeat;
+  background-size: contain;
+  color: white;
+  font-size: 12pt;
+  font-family: ralewayregular, sans-serif;
+  padding: 0;
+  margin: 2.5em;
 }
 
 a:link, a:visited, a:hover {
-	color: white;
+  color: white;
+}
+
+header {
+  background: url("/static/emf/img/logo.png") no-repeat;
+  background-size: contain;
+  display: table;
+  width: 100%;
+  height: 5%;
+  min-height: 7em;
+  margin-bottom: 2.5%;
+}
+
+header div {
+  display: table-cell;
+  text-align: center;
+}
+
+header div h1 {
+  text-align: center;
+  font-size: 2.5em;
+}
+
+header div div.status {
+  position: absolute;
+  top: 15pt;
+  right: 30pt;
+}
+
+header div div.status h2 {
+  background: white;
+  color: black;
+  border-radius: 0.25em;
+  padding: .25em .5em;
+}
+
+@media screen and (max-width: 1024px) {
+  header {
+    background: none;
+  }
+  header div h1 {
+    text-align: left;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  header div div.status {
+    position: relative;
+    top: unset;
+    right: unset;
+  }
+}
+
+.split {
+  display: flex;
+}
+
+.split > div {
+  flex: 1 1 auto;
+  width: 50%;
+  margin: 0 1em;
+}
+
+.split > div .align-bottom {
+  margin-top: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .split {
+    display: block;
+  }
+  .split > div {
+    width: 100%;
+    flex: unset;
+    margin: 0;
+  }
+}
+
+.split > div:first-child {
+  margin-left: 0;
+}
+
+.split > div:last-child {
+  margin-right: 0;
+}
+
+.status.closed h2 {
+  background-color: #C70039;
+}
+
+.status.open h2 {
+  background-color: #33FF80;
+}
+
+.alert-block {
+  border: 1px solid #5f1539;
+  border-radius: .25em;
+  background: rgba(95, 21, 57, 0.5);
+  padding: 1em;
 }
 
 table {
-	line-height: 1.5;
-	width: 100%;
-	border-spacing: 0;
-}
-
-table thead th {
-	text-align: left;
-	border-bottom: 1pt solid #5f1539;
-}
-
-table tbody tr:nth-child(odd) {
-	background-color: rgba( 255, 255, 255, .1 );
-}
-
-table thead.sub th {
-    padding-top: 12pt;
-    border-bottom: unset;
+  line-height: 1.5;
+  width: 100%;
+  border-spacing: 0;
 }
 
 table.large {
-    font-size: 21pt;
+  font-size: 21pt;
+}
+
+table thead th {
+  text-align: left;
+  border-bottom: 1pt solid #5f1539;
+}
+
+table thead.sub th {
+  padding-top: 12pt;
+  border-bottom: unset;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.1);
 }

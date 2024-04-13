@@ -1,0 +1,152 @@
+@charset "UTF-8";
+
+@import url('../fonts/fonts.css');
+@import url('bargraph.css');
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.2em;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+body {
+    background: #020021 url('/static/emf/img/display-bg.png');
+    background-size: 2100px auto;
+    color: white;
+    font-size: 24pt;
+    font-family: ralewayregular, sans-serif;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 20pt;
+    margin-right: 20pt;
+    padding: 0;
+    overflow: hidden;
+}
+
+header {
+    text-align: center;
+    height: 160px;
+}
+
+#header {
+    margin-top: 50px;
+}
+
+#logo {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#clock {
+    position: absolute;
+    top: 40px;
+    right: 30px;
+    font-size: 36pt;
+}
+
+#page {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 18pt;
+}
+
+@media screen and ( max-width: 1280px ) {
+    #logo {
+	display: none;
+    }
+    #clock {
+	display: none;
+    }
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.vh100 {
+    min-height: 100vh;
+}
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.mt-auto {
+    margin-top: auto;
+}
+
+.mb-auto {
+    margin-bottom: auto;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+.mr-auto {
+    margin-right: auto;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.float-right {
+    float: right;
+}
+
+.list-style-none {
+    list-style: none;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+
+	table {
+		font-size: 21pt;
+		line-height: 1.5;
+		width: 100%;
+		height: 100%;
+		border-spacing: 0;
+		margin-bottom: 30px;
+
+		thead th {
+			text-align: left;
+			border-bottom: 2px solid #90ccd6;
+
+			&.sub th {
+				padding-top: 12pt;
+				border-bottom: unset;
+			}
+		}
+		
+		tbody tr:nth-child(odd) {
+			background-color: rgba( 255, 255, 255, .1 );
+		}
+	}
+}
+
+.center {
+    text-align: center;
+}
+
+.smaller {
+    font-size: 18pt;
+}
+
+.larger {
+    font-size: 36pt;
+}
+
+#header, #content, #page {
+    transition: opacity 1s ease-in-out;
+}
