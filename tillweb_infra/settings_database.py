@@ -17,12 +17,11 @@ USING_DOCKER = os.getenv("USING_DOCKER", default="no") != "no"
 TILLWEB_DATABASE_NAME = "emfcamp"
 
 dbaccess = 'till:till@postgres:5432' if USING_DOCKER else ''
+TILLWEB_DATABASE_URI = f'postgresql+psycopg2://{dbaccess}/{TILLWEB_DATABASE_NAME}'
 
 TILLWEB_SINGLE_SITE = True
 TILLWEB_DATABASE = sessionmaker(
-    bind=create_engine(
-        f'postgresql+psycopg2://{dbaccess}/{TILLWEB_DATABASE_NAME}',
-        pool_size=32, pool_recycle=600),
+    bind=create_engine(TILLWEB_DATABASE_URI, pool_size=32, pool_recycle=600),
     info={'pubname': 'detail', 'reverse': reverse})
 TILLWEB_PUBNAME = "Electromagnetic Field"
 TILLWEB_LOGIN_REQUIRED = True

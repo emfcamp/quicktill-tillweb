@@ -25,6 +25,12 @@ def current_time():
     return datetime.datetime.now()
 
 
+def websocket_address(request):
+    if settings.DEBUG:
+        return "ws://localhost:8001/"
+    return f"wss://{request.META['HTTP_HOST']}/websocket/"
+
+
 class EventInfo:
     def __init__(self, now):
         # Work out how far through the event we are, based on the
@@ -227,13 +233,8 @@ def pricelist(request):
 
 
 def tapboard(request):
-    if settings.DEBUG:
-        websocket_address = "ws://localhost:8001/"
-    else:
-        websocket_address = \
-            f"wss://{request.META['HTTP_HOST']}/tapboard/websocket/"
     return render(request, "emf/tapboard.html", context={
-        "websocket_address": websocket_address,
+        "websocket_address": websocket_address(request),
     })
 
 
@@ -247,13 +248,8 @@ def tapboard_sw(request):
 
 
 def cellarboard(request):
-    if settings.DEBUG:
-        websocket_address = "ws://localhost:8001/"
-    else:
-        websocket_address = \
-            f"wss://{request.META['HTTP_HOST']}/tapboard/websocket/"
     return render(request, "emf/cellarboard.html", context={
-        "websocket_address": websocket_address,
+        "websocket_address": websocket_address(request),
     })
 
 

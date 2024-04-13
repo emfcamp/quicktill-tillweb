@@ -3,21 +3,24 @@
 # database and pushes updated objects to redis. It is expected that a
 # single instance of this program will be run as a daemon.
 
+from django.core.management.base import BaseCommand
+from django.conf import settings
 import redis
 import sdnotify
-from . import tilldb  # noqa
+from emf import tilldb  # noqa: F401
 import sqlalchemy.event
 from sqlalchemy.orm import joinedload, undefer
 from django.core.serializers.json import DjangoJSONEncoder
 from quicktill import event, listen, td
 from quicktill.models import StockLine, StockType, StockItem
-from .api_objects import stockline_to_dict, stocktype_to_dict, stockitem_to_dict
+from emf.api_objects import \
+    stockline_to_dict, stocktype_to_dict, stockitem_to_dict
 
 rcon = None
 json = DjangoJSONEncoder(indent=2)
 
 
-qcounter_enabled = True
+qcounter_enabled = False
 show_queries = False
 
 
@@ -133,45 +136,68 @@ def notify_stockitem_change(id_str):
                 publish(stockline_to_dict(si.stockline))
 
 
-def main():
-    global rcon
-    td.init("dbname=emfcamp")
-    mainloop = event.SelectorsMainLoop()
-    listener = listen.db_listener(mainloop, td.engine)
-    rcon = redis.Redis(decode_responses=True)
+class Command(BaseCommand):
+    help = 'Forward events from the till database to redis'
 
-    # Start listening
-    listener.listen_for("stockline_change", notify_stockline_change)
-    listener.listen_for("stocktype_change", notify_stocktype_change)
-    listener.listen_for("stockitem_change", notify_stockitem_change)
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--count-queries', action='store_true', default=False,
+            help="Output number of queries per event")
+        parser.add_argument(
+            '--show-queries', action='store_true', default=False,
+            help="Output SQL used for all queries")
+        parser.add_argument(
+            '--redis-host', action='store', default='localhost',
+            help="Host to use to access redis")
+        parser.add_argument(
+            '--redis-port', action='store', default=6379, type=int,
+            help="Port to use to access redis")
 
-    # Preload redis with the current state of all the objects we can publish
+    def handle(self, *args, **options):
+        global qcounter_enabled, show_queries, rcon
+        qcounter_enabled = options["count_queries"] or options["show_queries"]
+        show_queries = options["show_queries"]
 
-    with td.orm_session():
-        with qcounter("init"):
-            stocktypes = td.s.query(StockType)\
-                             .options(joinedload("unit"))\
-                             .options(joinedload("meta"))\
-                             .options(undefer("total"),
-                                      undefer("total_remaining"))\
-                             .all()
-            stockitems = td.s.query(StockItem)\
-                             .options(undefer("remaining"))\
-                             .all()
-            stocklines = td.s.query(StockLine)\
-                             .options(joinedload("stockonsale"))\
-                             .all()
+        td.init(settings.TILLWEB_DATABASE_URI)
+        mainloop = event.SelectorsMainLoop()
+        listener = listen.db_listener(mainloop, td.engine)
+        rcon = redis.Redis(
+            host=options["redis_host"],
+            port=options["redis_port"],
+            decode_responses=True)
 
-            for sl in stocklines:
-                publish(stockline_to_dict(sl))
-            for st in stocktypes:
-                publish(stocktype_to_dict(st))
-            for si in stockitems:
-                publish(stockitem_to_dict(si))
+        # Start listening
+        listener.listen_for("stockline_change", notify_stockline_change)
+        listener.listen_for("stocktype_change", notify_stocktype_change)
+        listener.listen_for("stockitem_change", notify_stockitem_change)
 
-    # Notify systemd that startup is complete
-    sdnotify.SystemdNotifier().notify("READY=1")
+        # Preload redis with the current state of all the objects we can publish
 
-    # Loop forever (or until the database or redis is restarted)
-    while True:
-        mainloop.iterate()
+        with td.orm_session():
+            with qcounter("init"):
+                stocktypes = td.s.query(StockType)\
+                                 .options(joinedload("unit"))\
+                                 .options(joinedload("meta"))\
+                                 .options(undefer("total"),
+                                          undefer("total_remaining"))\
+                                 .all()
+                stockitems = td.s.query(StockItem)\
+                                 .options(undefer("remaining"))\
+                                 .all()
+                stocklines = td.s.query(StockLine)\
+                                 .options(joinedload("stockonsale"))\
+                                 .all()
+
+                for sl in stocklines:
+                    publish(stockline_to_dict(sl))
+                for st in stocktypes:
+                    publish(stocktype_to_dict(st))
+                for si in stockitems:
+                    publish(stockitem_to_dict(si))
+
+        # Notify systemd that startup is complete
+        sdnotify.SystemdNotifier().notify("READY=1")
+
+        # Loop forever (or until the database or redis is restarted)
+        while True:
+            mainloop.iterate()

@@ -2,7 +2,7 @@ EMF Till web service
 ====================
 
 Infrastructure needed to bring up an instance of `quicktill.tillweb`,
-plus the public-facing web pages for https://bar.emfcamp.org/
+plus the public-facing web pages for https://bar.emf.camp/
 
 This is the EMF-specific fork of the project and contains assumptions
 about how the EMF till is configured. [There is a separate repo for the generic version of the project here.](https://github.com/sde1000/quicktill-tillweb)
@@ -41,6 +41,8 @@ restart manually to execute the migration.
 Press Ctrl+C to stop the development web server.
 
 To clean up afterwards, run `docker compose down --rmi local`
+
+The password for the tapboard PWA in DEBUG mode is "test".
 
 Updating dependencies
 ---------------------

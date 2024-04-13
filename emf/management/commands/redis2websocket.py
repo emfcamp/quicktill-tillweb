@@ -6,6 +6,7 @@
 # It is expected that a single instance of this program will be run as
 # a daemon. In production this will be proxied behind nginx.
 
+from django.core.management.base import BaseCommand
 import asyncio
 import websockets
 import json
@@ -88,9 +89,11 @@ async def handler(websocket):
             s.discard(websocket)
 
 
-async def amain(args):
+async def amain(options):
     global rclient
-    rclient = redis.Redis(decode_responses=True)
+    rclient = redis.Redis(
+        host=options["redis_host"], port=options["redis_port"],
+        decode_responses=True)
     # Check redis config includes notify-keyspace-events letters 'K' and 'A'
     cfg = (await rclient.config_get(nke))[nke]
     if 'E' not in cfg or 'A' not in cfg:
@@ -99,8 +102,9 @@ async def amain(args):
     async with rclient.pubsub(ignore_subscribe_messages=True) as pubsub:
         await pubsub.psubscribe("__keyevent@*__:*")
         async with websockets.serve(
-                handler, "localhost" if not args.bind else args.bind,
-                args.port):
+                handler,
+                None if not options["bind"] else options["bind"],
+                options["port"]):
             # NOW we can report to systemd that we are ready
             # (this won't block)
             sdnotify.SystemdNotifier().notify("READY=1")
@@ -115,11 +119,21 @@ async def amain(args):
                         websockets.broadcast(subscribers, not_present(key))
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Redis to websocket server")
-    parser.add_argument("--bind", "-b", type=str, action="append",
-                        help="Host to bind to")
-    parser.add_argument("--port", "-p", type=int, action="store",
-                        help="Port to listen on", default=8001)
-    args = parser.parse_args()
-    asyncio.run(amain(args))
+class Command(BaseCommand):
+    help = 'Forward events from the till database to redis'
+
+    def add_arguments(self, parser):
+        parser.add_argument("--bind", "-b", type=str, action="append",
+                            help="Host to bind to")
+        parser.add_argument("--port", "-p", type=int, action="store",
+                            help="Port to listen on", default=8001)
+        parser.add_argument(
+            '--redis-host', action='store', default='localhost',
+            help="Host to use to access redis")
+        parser.add_argument(
+            '--redis-port', action='store', default=6379, type=int,
+            help="Port to use to access redis")
+
+
+    def handle(self, *args, **options):
+        asyncio.run(amain(options))

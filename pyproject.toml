@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "emftillweb"
 version = "0.3.0"
-description = "bar.emfcamp.org web service"
+description = "bar.emf.camp web service"
 authors = ["Stephen Early <steve@assorted.org.uk>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
@@ -10,6 +10,7 @@ packages = [
     {include = "emf"},
     {include = "markup"},
 ]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,7 +20,7 @@ django-widget-tweaks = "~1.5"
 psycopg2 = "~2.9"
 odfpy = "~1.4"
 sqlalchemy = "~1.4"
-quicktill = { git = "https://github.com/sde1000/quicktill.git", rev = "679c56a109b1ec0836209d3583816fa2783fb842" }
+quicktill = { git = "https://github.com/sde1000/quicktill.git", rev = "cc7e28ae502353bfa103488a7f26c045a02652f8" }
 sorl-thumbnail = "^12.8"
 django-photologue = "^3"
 markdown = "^3.5"

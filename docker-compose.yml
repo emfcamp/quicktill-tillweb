@@ -2,6 +2,7 @@ services:
   app:
     build:
       context: "./"
+    image: "emftillweb-dev-app"
     networks:
       - emftillweb
     depends_on:
@@ -16,6 +17,35 @@ services:
       context: "./docker/data/"
     networks:
       - emftillweb
+
+  redis:
+    image: "redis:7.0-alpine"
+    networks:
+      - emftillweb
+    command: ["sh", "-c", "rm -f /data/dump.rdb && redis-server --save ''"]
+
+  till2redis:
+    depends_on:
+      - postgres
+      - redis
+    image: "emftillweb-dev-app"
+    networks:
+      - emftillweb
+    volumes:
+      - .:/app
+    command: ./manage.py till2redis --redis-host=redis
+
+  redis2websocket:
+    depends_on:
+      - redis
+    image: "emftillweb-dev-app"
+    networks:
+      - emftillweb
+    volumes:
+      - .:/app
+    command: ./manage.py redis2websocket --redis-host=redis
+    ports:
+      - "8001:8001"
 
 networks:
   emftillweb:
