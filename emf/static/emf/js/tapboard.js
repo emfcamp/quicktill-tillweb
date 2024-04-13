@@ -116,7 +116,7 @@ function process_message(message) {
 	if (m.stockitem === null) {
 	    /* There's nothing connected to the line right now */
 	    show_logo();
-	    updateHTML(logo, "");
+	    updateHTML(logo, notConnectedLogo);
 	    updateHTML(tastingNotes, "");
 	    updateText(product, "");
 	    updateText(price, "");
