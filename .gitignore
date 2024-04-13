@@ -6,3 +6,4 @@ __pycache__
 /media/
 /database/
 .DS_Store
+/emf/static/emf/css
