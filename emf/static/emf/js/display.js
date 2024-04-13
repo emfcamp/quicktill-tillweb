@@ -1,7 +1,7 @@
 /* Display board for EMF bar */
 
 
-const header = document.getElementById("header");
+const header = document.getElementById("title");
 const content = document.getElementById("content");
 const clock = document.getElementById("clock");
 const page = document.getElementById("page");
