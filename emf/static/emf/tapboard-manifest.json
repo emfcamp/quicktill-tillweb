@@ -5,7 +5,7 @@
     "start_url": "/tapboard/",
     "icons": [
 	{
-	    "src": "tapboard-icon-512x512.png",
+	    "src": "img/tapboard-icon-512x512.png",
 	    "sizes": "512x512"
 	}
     ],
