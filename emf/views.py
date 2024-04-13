@@ -207,6 +207,7 @@ def frontpage(request):
                 "alcohol_used_pct": alcohol_used_pct,
                 "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
                 "sessions": sessions,
+                "session_comments_exist": any(s.comment for s in sessions),
                 "ales": ales,
                 "kegs": kegs,
                 "ciders": ciders,
