@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.11
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends libcups2-dev
 RUN apt-get clean
@@ -11,4 +11,8 @@ STOPSIGNAL SIGINT
 ENV USING_DOCKER=yes
 COPY . /app/
 ENV DJANGO_SETTINGS_MODULE=tillweb_infra.settings_production
+RUN mkdir config
+RUN touch config/secret_key
+RUN ./manage.py sass emf/static/emf/scss/ emf/static/emf/css/ -t compressed
+RUN rm -f config/secret_key
 CMD [ "docker/startup-prod.sh" ]

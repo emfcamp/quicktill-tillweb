@@ -12,6 +12,12 @@ services:
     ports:
       - "8000:8000"
 
+  scssbuilder:
+    image: "emftillweb-dev-app"
+    volumes:
+      - .:/app
+    command: ./manage.py sass emf/static/emf/scss/ emf/static/emf/css/ --watch
+
   postgres:
     build:
       context: "./docker/data/"
