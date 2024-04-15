@@ -74,3 +74,14 @@ Create/update the django database: `poetry run ./manage.py migrate`
 Create a superuser: `poetry run ./manage.py createsuperuser`
 
 Run the development server: `poetry run ./manage.py runserver`
+
+Compiling CSS from SASS/SCSS
+----------------------------
+
+NB these are done automatically when using Docker
+
+One time compile for production (minified):
+```docker compose run --rm app ./manage.py sass emf/static/emf/scss emf/static/emf/css -t compressed```
+
+Watch the folder for changes (for development):
+```docker compose run --rm app ./manage.py sass emf/static/emf/scss emf/static/emf/css -t compressed --watch```

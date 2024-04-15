@@ -29,12 +29,7 @@ requests-oauthlib = "^1.3"
 redis = "^5"
 sdnotify = "^0.3"
 websockets = "^12.0"
-
-[tool.poetry.dev-dependencies]
-
-[tool.poetry.scripts]
-till2redis = "emf.till2redis:main"
-redis2websocket = "emf.redis2websocket:main"
+django-sass = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

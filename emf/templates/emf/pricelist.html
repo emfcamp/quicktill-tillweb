@@ -7,23 +7,23 @@
 {% endblock %}
 
 {% block content %}
-<p>N.B. not all draught beers and ciders are on sale at the same
+<p>Note: Not all draught beers and ciders are on sale at the same
 time. See <a href="{% url "frontpage" %}">the front page</a> for the
 current selection.</p>
 
 <table>
   <colgroup>
     <col width="50%" />
-    <col width="16.66%" />
-    <col width="16.66%" />
-    <col width="16.66%" />
+    <col width="15%" />
+    <col width="20%" />
+    <col width="15%" />
   </colgroup>
   <thead>
     <tr>
       <th>Name</th>
       <th>ABV</th>
       <th>Price</th>
-      <th>Stock status</th>
+      <th>Stock</th>
     </tr>
   </thead>
   <tbody>
@@ -41,11 +41,18 @@ current selection.</p>
       <td>{{ p.manufacturer }} {{ p.name }}</td>
       <td>{% if p.abv != None %}{{ p.abv }}%{% endif %}</td>
       <td>£{{ p.saleprice }}/{{ p.unit.item_name }}</td>
-      <td>
-	{% if remain_pct <= 5.0 %}Last few
-	{% elif remain_pct <= 15.0 %}Low
-        {% else %}Plenty
+      <td class="stock">
+        {% if remain_pct < 5.0 %}
+        <span class="orb lastfew" title="Last few"></span>
+        <span class="text">Last few</span>
+        {% elif remain_pct < 15.0 %}
+        <span class="orb low" title="Low"></span>
+        <span class="text">Low</span>
+        {% else %}
+        <span class="orb plenty" title="Plenty"></span>
+        <span class="text">Plenty</span>
         {% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>

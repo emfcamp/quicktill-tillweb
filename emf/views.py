@@ -141,6 +141,8 @@ def display_info(request):
             'content': ' ',
             'duration': 5000 if settings.DEBUG else 30000,
             'page': 'Idle',
+            'count': 0,
+            'current': 0,
         })
 
     current = request.GET.get("current", "start")
@@ -157,6 +159,9 @@ def display_info(request):
     page = pages[pagenum]
     page['page'] = f"Page {pagenum + 1} of {len(pages)}" \
         if len(pages) > 1 else ""
+
+    page['count'] = len(pages)
+    page['current'] = pagenum
 
     if callable(page['content']):
         page['content'] = page['content']()
@@ -207,6 +212,7 @@ def frontpage(request):
                 "alcohol_used_pct": alcohol_used_pct,
                 "alcohol_used_pct_remainder": 100.0 - alcohol_used_pct,
                 "sessions": sessions,
+                "session_comments_exist": any(s.comment for s in sessions),
                 "ales": ales,
                 "kegs": kegs,
                 "ciders": ciders,
