@@ -1,22 +1,22 @@
 {% load static %}
-const VERSION = "v1";
+const VERSION = "v2";
 
-const CACHE_NAME = `tillboard-${VERSION}`;
+const CACHE_NAME = `tapboard-${VERSION}`;
 
 const APP_STATIC_RESOURCES = [
     "{% url "tapboard" %}",
     "{% static "emf/js/tapboard.js" %}",
-    "{% static "emf/css/fonts.css" %}",
+    "{% static "emf/fonts/fonts.css" %}",
     "{% static "emf/css/tapboard.css" %}",
-    "{% static "emf/img/tapboard-bg.png" %}",
-    "{% static "emf/css/raleway-regular-webfont.woff" %}",
-    "{% static "emf/css/raleway-regular-webfont.woff2" %}",
-    "{% static "emf/css/raleway-semibold-webfont.woff" %}",
-    "{% static "emf/css/raleway-semibold-webfont.woff2" %}",
+    "{% static "emf/fonts/raleway-regular-webfont.woff" %}",
+    "{% static "emf/fonts/raleway-regular-webfont.woff2" %}",
+    "{% static "emf/fonts/raleway-semibold-webfont.woff" %}",
+    "{% static "emf/fonts/raleway-semibold-webfont.woff2" %}",
     "{% static "emf/img/tapboard-icon-512x512.png" %}",
     "{% static "emf/tapboard-manifest.json" %}",
     "{% static "emf/img/tapboard-menu-icon-white.svg" %}",
     "{% static "emf/img/tapboard-not-connected.svg" %}",
+    "{% static "emf/img/unknown-brand.png" %}",
     "{% static "emf/img/caution-icon.svg" %}",
 ];
 
