@@ -4,6 +4,8 @@
 
 $background: #afc944;
 $foreground: #213018;
+$highlight: #f55089;
+$highlight2: #F9E200;
 
 body {
 	min-height: 100%;
@@ -95,9 +97,7 @@ header {
 }
 
 .alert-block {
-	border: 1px solid #5f1539;
-	border-radius: .25em;
-	background: rgba(95, 21, 57, 0.5);
+	background-color: $highlight2;
 	padding: 1em;
 }
 
