@@ -14,6 +14,12 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2.rfc6749.errors import OAuth2Error
 from urllib.parse import urlparse, urljoin
 
+from emf.tilldb import tillsession
+from quicktill.models import User as TillUser
+from quicktill.models import Group as TillGroup
+from quicktill.models import LogEntry
+from sqlalchemy.orm import joinedload
+
 EMFSSO_AUTH_URL = 'https://identity.emfcamp.org/oauth2/authorize'
 EMFSSO_TOKEN_URL = 'https://identity.emfcamp.org/oauth2/token'
 EMFSSO_USERINFO_URL = 'https://identity.emfcamp.org/oauth2/userinfo'
@@ -22,8 +28,63 @@ EMFSSO_USERINFO_URL = 'https://identity.emfcamp.org/oauth2/userinfo'
 @login_required
 def userprofile(request):
     may_edit_users = request.user.has_perm("auth.add_user")
-    return render(request, "registration/profile.html",
-                  {'may_edit_users': may_edit_users})
+
+    with tillsession() as s:
+        tilluser = s.query(TillUser)\
+                    .options(joinedload('permissions'))\
+                    .filter(TillUser.webuser == request.user.username)\
+                    .one_or_none()
+
+        available_users = s.query(TillUser)\
+                           .filter(TillUser.webuser == None)\
+                           .filter(TillUser.enabled == True)\
+                           .order_by(TillUser.fullname)\
+                           .all()  # noqa: E711,E712
+
+        if request.method == "POST" \
+           and "submit_tillusersetup" in request.POST \
+           and "tilluser" in request.POST:
+            manager = s.query(TillGroup).get("manager")
+            if not manager:
+                messages.error(
+                    request,
+                    "Till database does not have manager group defined")
+                return redirect("user-profile-page")
+            if tilluser:
+                tilluser.webuser = None
+                s.commit()
+            if request.POST["tilluser"]:
+                newuser = s.query(TillUser).get(int(request.POST["tilluser"]))
+            else:
+                newuser = TillUser(fullname=request.user.get_full_name(),
+                                   shortname=request.user.get_full_name(),
+                                   enabled=True)
+                s.add(newuser)
+                s.commit()
+            if not newuser:
+                messages.error(
+                    request,
+                    f"Till user id {request.POST['tilluser']} not found")
+                return redirect("user-profile-page")
+            newuser.webuser = request.user.username
+            if manager not in newuser.groups:
+                newuser.groups.append(manager)
+            le = LogEntry(
+                source="Web",
+                sourceaddr=request.META['REMOTE_ADDR'],
+                loguser=newuser,
+                user=newuser,
+                description=f"Linked to web account '{request.user.username}'")
+            le.update_refs(s)
+            s.add(le)
+            s.commit()
+            return redirect("tillweb-pubroot")
+
+        return render(request, "registration/profile.html",
+                      {'may_edit_users': may_edit_users,
+                       'tilluser': tilluser,
+                       'available_users': available_users,
+                       })
 
 
 class PasswordChangeForm(forms.Form):
@@ -288,7 +349,7 @@ def emfsso_callback(request):
                              "group does not exist")
 
     login(request, user)
-    messages.info(request, f"Logged in as {user} via EMF SSO")
+    # messages.info(request, f"Logged in as {user} via EMF SSO")
 
     # This flag is inserted into template contexts by the emfsso_user
     # context processor. It can be used to disable "change password"

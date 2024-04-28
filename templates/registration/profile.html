@@ -3,17 +3,85 @@
 {% block title %}Till user profile{% endblock %}
 
 {% block content %}
-<nav class="container">
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "tillweb-pubroot" %}">{{TILLWEB_PUBNAME}} till front page</a>
-    </li>
-  {% if may_edit_users %}
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "userlist" %}">Add or remove users</a>
-    </li>
-  {% endif %}
-  </ul>
-</nav>
+<main class="container">
+  <div class="row">
+    <div class="col">
+      {% if tilluser %}
+      {% if not tilluser.enabled %}
+      <div class="alert alert-error">
+	Your till user "{{tilluser.fullname}}" is disabled, so your
+	access to the till web interface is read-only.
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="alert alert-warning">
+	<p>Your web user account is not connected to a till user account,
+	  so your access to the till web interface is read-only.</p>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tillUserSetup">Create or connect to a till user</button>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul class="nav flex-column">
+	<li class="nav-item">
+	  <a class="nav-link" href="{% url "frontpage" %}">Front page</a>
+	</li>
+	<li class="nav-item">
+	  <a class="nav-link" href="{% url "tillweb-pubroot" %}">Till web interface</a>
+	</li>
+	<li class="nav-item">
+	  <a class="nav-link" href="{% url "refusals" %}">Refusals log</a>
+	</li>
+	<li class="nav-item">
+	  <a class="nav-link" href="{% url "cellarboard" %}">Cellar status board</a>
+	</li>
+	{% if may_edit_users %}
+	<li class="nav-item">
+	  <a class="nav-link" href="{% url "userlist" %}">Add or remove users</a>
+	</li>
+	{% endif %}
+	<li class="nav-item">
+	  <a class="nav-link" href="#" data-toggle="modal" data-target="#tillUserSetup">Change till user</a>
+	</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<div class="modal fade" id="tillUserSetup" tabindex="-1" aria-labelledby="tillUserSetupModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+	<h5 class="modal-title" id="tillUserSetupModalLabel">Till user setup</h5>
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	  <span aria-hidden="true">&times;</span>
+	</button>
+      </div>
+      <form action="" method="post">{% csrf_token %}
+	<div class="modal-body">
+	  <div class="form-group">
+	    <label for="tillUserChoice">Which till user are you?</label>
+	    <select class="form-control" name="tilluser" id="tillUserChoice">
+	      {% if not tilluser %}
+	      <option value="">Create a new user "{{request.user.get_full_name}}"</option>
+	      {% endif %}
+	      {% for u in available_users %}
+	      <option value="{{u.id}}">{{u.fullname}}</option>
+	      {% endfor %}
+	    </select>
+	  </div>
+	  <p>The selected user will be given "manager" permissions on
+	    the till, and linked to this web account.</p>
+	</div>
+	<div class="modal-footer">
+	  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+	  <button type="submit" class="btn btn-primary" name="submit_tillusersetup">Save changes</button>
+	</div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
