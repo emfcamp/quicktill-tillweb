@@ -9,5 +9,6 @@ if [ "${DJANGO_SETTINGS_MODULE}" = "" ]; then
     exit 1
 fi
 
+poetry run ./manage.py sass sass emf/static/emf/scss/ emf/static/emf/css/
 poetry run ./manage.py collectstatic --no-input
 poetry run ./manage.py migrate
