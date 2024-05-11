@@ -69,20 +69,6 @@ def stock(request):
         })
 
 
-def shop(request):
-    with tillsession() as s:
-        # We want all price lookups in departments 210, 220, 230, 240
-        plus = s.query(PriceLookup)\
-                .filter(PriceLookup.dept_id.in_([210, 220, 230, 240]))\
-                .order_by(PriceLookup.dept_id)\
-                .order_by(PriceLookup.description)\
-                .all()
-
-        return JsonResponse({
-            'shop': [plu_to_dict(plu) for plu in plus],
-        })
-
-
 def dept(request, dept_id):
     with tillsession() as s:
         stocktypes = stocktype_query(s)\
