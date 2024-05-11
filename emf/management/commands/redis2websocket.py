@@ -120,7 +120,7 @@ async def amain(options):
 
 
 class Command(BaseCommand):
-    help = 'Forward events from the till database to redis'
+    help = 'Forward events from redis to websocket clients'
 
     def add_arguments(self, parser):
         parser.add_argument("--bind", "-b", type=str, action="append",
