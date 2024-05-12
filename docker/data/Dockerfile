@@ -1,5 +1,5 @@
 FROM postgres:15-alpine as dumper
-COPY emfcamp2022-anonymised.sql /docker-entrypoint-initdb.d/
+COPY emfcamp.sql /docker-entrypoint-initdb.d/
 RUN ["sed", "-i", "s/exec \"$@\"/echo \"skipping...\"/", "/usr/local/bin/docker-entrypoint.sh"]
 
 ENV POSTGRES_USER=till

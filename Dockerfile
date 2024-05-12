@@ -1,6 +1,6 @@
 FROM python:3.11
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends libcups2-dev
+RUN apt-get install -y --no-install-recommends libcups2-dev postgresql-client
 RUN apt-get clean
 RUN pip3 install poetry
 RUN poetry config virtualenvs.create false

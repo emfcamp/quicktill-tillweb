@@ -8,6 +8,8 @@ urls = [
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),
     path('prices/', views.pricelist, name="pricelist"),
     path('refusals/', views.refusals, name="refusals"),
+    path('database-dump/emfcamp.sql.gz', views.database_dump,
+         name="emf-database-dump"),
     path('display/', views.display, name="display"),
     path('display/info.json', views.display_info, name="display-info"),
     path('display/<page>/', views.display, name="display-page"),

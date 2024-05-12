@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.http import Http404
+from django.http import HttpResponse, HttpResponseForbidden
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -8,10 +9,12 @@ from django.conf import settings
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import undefer
 from sqlalchemy import func
+import sqlalchemy.engine.url
 
 from decimal import Decimal
 
 import datetime
+import subprocess
 
 import emf.models
 
@@ -101,6 +104,42 @@ def refusals(request):
                 'refusals': r,
                 'dtf': dtf,
             })
+
+
+@login_required
+def database_dump(request):
+    first_session = emf.models.Session.objects.all().first()
+    if first_session and datetime.datetime.now() > first_session.opening_time:
+        return HttpResponseForbidden("You can't dump the database after "
+                                     "the start of the event.")
+
+    u = sqlalchemy.engine.url.make_url(settings.TILLWEB_DATABASE_URI)
+    opts = ["pg_dump", "--no-owner"]
+    if u.database:
+        opts = opts + ["-d", u.database]
+    if u.host:
+        opts = opts + ["-h", u.host]
+    if u.port:
+        opts = opts + ["-p", str(u.port)]
+    if u.username:
+        opts = opts + ["-U", u.username]
+
+    # We want to pipe pg_dump -O into gzip -9 and serve up the output
+    # as application/octet-stream
+    p1 = subprocess.Popen(opts, stdin=subprocess.PIPE if u.password else None,
+                          stdout=subprocess.PIPE)
+    p2 = subprocess.Popen(["gzip", "-9"], stdin=p1.stdout,
+                          stdout=subprocess.PIPE)
+    if u.password:
+        p1.stdin.write(u.password.encode("utf-8") + b"\n")
+        p1.stdin.close()
+    p1.stdout.close()
+    dump = p2.communicate()[0]
+
+    r = HttpResponse(content_type="application/octet-stream")
+    r['Content-Disposition'] = 'attachment; filename=emfcamp.sql.gz'
+    r.write(dump)
+    return r
 
 
 def display(request, page=None):
