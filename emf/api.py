@@ -1,6 +1,6 @@
 from .tilldb import tillsession, on_tap
 import json
-from quicktill.models import StockType, Unit, Department, PriceLookup
+from quicktill.models import StockType, Unit, Department
 from quicktill.models import StockLine
 from sqlalchemy.orm import undefer, joinedload
 from django.conf import settings
@@ -9,7 +9,7 @@ from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from .api_objects import department_to_dict, stocktype_to_dict, \
-    stockitem_to_dict, plu_to_dict, stockline_to_dict
+    stockitem_to_dict, stockline_to_dict
 
 
 # Partial queries

@@ -13,7 +13,6 @@ import json
 import redis.asyncio as redis
 import sdnotify
 import re
-import argparse
 
 nke = "notify-keyspace-events"
 keyre = re.compile(r'^(stockline|stocktype|stockitem)/\d+$')
@@ -133,7 +132,6 @@ class Command(BaseCommand):
         parser.add_argument(
             '--redis-port', action='store', default=6379, type=int,
             help="Port to use to access redis")
-
 
     def handle(self, *args, **options):
         asyncio.run(amain(options))
