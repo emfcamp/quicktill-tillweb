@@ -15,7 +15,10 @@ import sdnotify
 import re
 
 nke = "notify-keyspace-events"
-keyre = re.compile(r'^(stockline|stocktype|stockitem)/\d+$')
+
+# We may add more keys in the future, and we don't want to have to change this
+# so ignore for now
+# keyre = re.compile(r'(^(stockline|stocktype|stockitem)/\d+$)|(^totals/.*$)')
 
 rclient = None
 
@@ -38,9 +41,9 @@ def not_present(key):
 
 
 async def subscribe(websocket, key):
-    if keyre.match(key) is None:
-        await websocket.send(error("Invalid key"))
-        return
+    # if keyre.match(key) is None:
+    #     await websocket.send(error("Invalid key"))
+    #     return
     subscribers = subscriptions.setdefault(key, set())
     subscribers.add(websocket)
     current_value = await rclient.get(key)
