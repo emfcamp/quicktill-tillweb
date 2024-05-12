@@ -10,9 +10,12 @@ import sdnotify
 from emf import tilldb  # noqa: F401
 import sqlalchemy.event
 from sqlalchemy.orm import joinedload, undefer
+from sqlalchemy.sql import func
 from django.core.serializers.json import DjangoJSONEncoder
+from decimal import Decimal
 from quicktill import event, listen, td
-from quicktill.models import StockLine, StockType, StockItem
+from quicktill.models import StockLine, StockType, StockItem, \
+    Unit, StockOut
 from emf.api_objects import \
     stockline_to_dict, stocktype_to_dict, stockitem_to_dict
 
@@ -57,6 +60,24 @@ def publish(d):
 
 def delete(key):
     rcon.delete(key)
+
+
+def publish_totals_by_unit():
+    # We must be called with an ORM session in progress
+    units = td.s.query(Unit, func.sum(StockOut.qty))\
+                .join(StockType)\
+                .join(StockItem)\
+                .join(StockOut)\
+                .filter(StockOut.removecode_id == 'sold')\
+                .group_by(Unit)\
+                .all()
+
+    publish({
+        'key': 'totals/by-unit',
+        'units': {
+            unit.description: (qty / unit.base_units_per_sale_unit).quantize(
+                Decimal("0.1")) for unit, qty in units},
+    })
 
 
 def notify_stockline_change(id_str):
@@ -135,6 +156,8 @@ def notify_stockitem_change(id_str):
             if si.stockline:
                 publish(stockline_to_dict(si.stockline))
 
+            publish_totals_by_unit()
+
 
 class Command(BaseCommand):
     help = 'Forward events from the till database to redis'
@@ -194,6 +217,8 @@ class Command(BaseCommand):
                     publish(stocktype_to_dict(st))
                 for si in stockitems:
                     publish(stockitem_to_dict(si))
+
+                publish_totals_by_unit()
 
         # Notify systemd that startup is complete
         sdnotify.SystemdNotifier().notify("READY=1")
