@@ -88,6 +88,7 @@ def stockitem_to_dict(s):
         'key': f'stockitem/{s.id}',
         'id': s.id,
         'stocktype': stocktype_to_dict(s.stocktype),
+        'description': s.description,
         'remaining': s.remaining,
         'size': s.size,
         'remaining_pct': (s.remaining / s.size * 100).quantize(Decimal("0.01")),
