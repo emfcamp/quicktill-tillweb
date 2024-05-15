@@ -352,8 +352,11 @@ def api_sessions(request):
     sessions = emf.models.Session.objects.all()
     return JsonResponse({
         'sessions': [
-            {k: getattr(s, k) for k in ('opening_time', 'closing_time')}
-            for s in sessions],
+            {
+                "type": "session",
+                "opening_time": s.opening_time,
+                "closing_time": s.closing_time,
+            } for s in sessions],
         })
 
 

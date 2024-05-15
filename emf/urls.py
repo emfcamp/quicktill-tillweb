@@ -27,6 +27,8 @@ urls = [
     path('api/progress.json', views.api_progress, name="api-progress"),
     path('api/departments.json', api.departments, name="api-departments"),
     path('api/on-tap.json', api.api_on_tap, name="api-on-tap"),
+    path('api/cybar-on-tap.json', api.api_cybar_on_tap,
+         name="api-cybar-on-tap"),
     path('api/cybar.json', api.cybar, name="api-cybar"),
     path('api/stocktypes.json', api.stock, name="api-stocktypes"),
     path('api/department/<int:dept_id>.json', api.dept, name="api-dept"),

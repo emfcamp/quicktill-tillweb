@@ -42,9 +42,19 @@ def api_on_tap(request):
         ales, kegs, ciders = on_tap(s)
 
         return JsonResponse({
-            'ales': [stockitem_to_dict(ale, rf) for ale, rf in ales],
-            'kegs': [stockitem_to_dict(keg, rf) for keg, rf in kegs],
-            'ciders': [stockitem_to_dict(cider, rf) for cider, rf in ciders],
+            'ales': [stockitem_to_dict(ale) for ale, _ in ales],
+            'kegs': [stockitem_to_dict(keg) for keg, _ in kegs],
+            'ciders': [stockitem_to_dict(cider) for cider, _ in ciders],
+        })
+
+
+def api_cybar_on_tap(request):
+    with tillsession() as s:
+        _, kegs, ciders = on_tap(s, location="Null Sector")
+
+        return JsonResponse({
+            'kegs': [stockitem_to_dict(keg) for keg, _ in kegs],
+            'ciders': [stockitem_to_dict(cider) for cider, _ in ciders],
         })
 
 

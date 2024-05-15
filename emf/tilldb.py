@@ -84,12 +84,12 @@ def booziness(s):
     return used, total, float(used / total) * 100.0
 
 
-def on_tap(s):
+def on_tap(s, location="Bar"):
     # Used in display_on_tap and frontpage
     base = s.query(StockItem, StockItem.remaining / StockItem.size)\
             .join('stocktype')\
             .join('stockline')\
-            .filter(StockLine.location == "Bar")\
+            .filter(StockLine.location == location)\
             .order_by(StockType.manufacturer, StockType.name)\
             .options(undefer('remaining'))\
             .options(contains_eager('stocktype'))

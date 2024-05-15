@@ -1,5 +1,6 @@
 import pathlib
 from markdown import markdown
+from decimal import Decimal
 
 product_logo_meta = "tillweb:product-logo"
 tasting_notes_meta = "tillweb:tasting-notes"
@@ -79,18 +80,16 @@ def stocktype_to_dict(s):
     }
 
 
-def stockitem_to_dict(s, remain_fraction=None):
-    d = {
+def stockitem_to_dict(s):
+    return {
         'type': 'stockitem',
         'key': f'stockitem/{s.id}',
         'id': s.id,
         'stocktype': stocktype_to_dict(s.stocktype),
         'remaining': s.remaining,
         'size': s.size,
+        'remaining_pct': (s.remaining / s.size * 100).quantize(Decimal("0.01")),
     }
-    if remain_fraction is not None:
-        d['remaining_pct'] = remain_fraction * 100
-    return d
 
 
 def plu_to_dict(plu):
