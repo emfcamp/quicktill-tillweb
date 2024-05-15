@@ -102,15 +102,17 @@ def locations(request):
 
 
 def stocklines(request):
+    brief = request.GET.get('output', 'brief') != 'full'
     with tillsession() as s:
         q = s.query(StockLine)\
-             .options(joinedload("stockonsale"),
-                      joinedload("stockonsale.stocktype"),
-                      joinedload("stockonsale.stocktype.meta"),
-                      undefer("stockonsale.remaining"),
-                      undefer("stockonsale.stocktype.total_remaining"),
-                      undefer("stockonsale.stocktype.total"))\
              .order_by(StockLine.location, StockLine.name)
+        if not brief:
+            q = q.options(joinedload("stockonsale"),
+                          joinedload("stockonsale.stocktype"),
+                          joinedload("stockonsale.stocktype.meta"),
+                          undefer("stockonsale.remaining"),
+                          undefer("stockonsale.stocktype.total_remaining"),
+                          undefer("stockonsale.stocktype.total"))
         if 'type' in request.GET:
             q = q.filter(StockLine.linetype.in_(request.GET.getlist('type')))
         if 'location' in request.GET:
@@ -119,7 +121,8 @@ def stocklines(request):
         stocklines = q.all()
 
         return JsonResponse({
-            'stocklines': [stockline_to_dict(sl) for sl in stocklines],
+            'stocklines': [stockline_to_dict(sl, brief=brief)
+                           for sl in stocklines],
         })
 
 

@@ -24,23 +24,25 @@ def department_to_dict(d):
     }
 
 
-def stockline_to_dict(line):
+def stockline_to_dict(line, brief=False):
     # If regular, return stockitem or null
     # If display [not supported]
     # If continuous, return stocktype
-    return {
-        'type': 'stockline',
+    d = {
+        'type': 'stockline-brief' if brief else 'stockline',
         'key': f'stockline/{line.id}',
         'id': line.id,
         'name': line.name,
         'location': line.location,
         'note': line.note,
         'linetype': line.linetype,
-        'stockitem': stockitem_to_dict(line.stockonsale[0])
-        if line.linetype == "regular" and line.stockonsale else None,
-        'stocktype': stocktype_to_dict(line.stocktype)
-        if line.linetype == "continuous" else None,
     }
+    if not brief:
+        d['stockitem'] = stockitem_to_dict(line.stockonsale[0]) \
+            if line.linetype == "regular" and line.stockonsale else None
+        d['stocktype'] = stocktype_to_dict(line.stocktype) \
+            if line.linetype == "continuous" else None
+    return d
 
 
 def stocktype_to_dict(s):
