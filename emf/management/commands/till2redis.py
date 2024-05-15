@@ -73,6 +73,7 @@ def publish_totals_by_unit():
                 .all()
 
     publish({
+        'type': "totals by unit",
         'key': 'totals/by-unit',
         'units': {
             unit.description: (qty / unit.base_units_per_sale_unit).quantize(
