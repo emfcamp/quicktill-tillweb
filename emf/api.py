@@ -58,18 +58,6 @@ def api_cybar_on_tap(request):
         })
 
 
-def cybar(request):
-    with tillsession() as s:
-        # We want all stock sold in cans or bottles
-        stocktypes = stocktype_query(s)\
-            .filter(Unit.name.in_(['can', 'bottle']))\
-            .all()
-
-        return JsonResponse({
-            'cybar': [stocktype_to_dict(st) for st in stocktypes],
-        })
-
-
 def stock(request):
     with tillsession() as s:
         stocktypes = stocktype_query(s).all()
@@ -102,6 +90,15 @@ def stocktype(request, stocktype_id):
             raise Http404
 
         return JsonResponse(stocktype_to_dict(stocktype))
+
+
+def locations(request):
+    with tillsession() as s:
+        locations = StockLine.locations(s)
+
+    return JsonResponse({
+        'locations': locations,
+    })
 
 
 def stocklines(request):

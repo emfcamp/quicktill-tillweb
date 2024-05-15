@@ -366,7 +366,7 @@ def api_progress(request):
         info = EventInfo(current_time())
 
         return JsonResponse({
-            'licensed_time_pct': info.completed_pct,
-            'expected_consumption_pct': info.expected_consumption_pct,
-            'actual_consumption_pct': (alcohol_used / total_alcohol) * 100,
+            'licensed_time_pct': Decimal(info.completed_pct),
+            'expected_consumption_pct': Decimal(info.expected_consumption_pct),
+            'actual_consumption_pct': Decimal((alcohol_used / total_alcohol) * 100),
         })
