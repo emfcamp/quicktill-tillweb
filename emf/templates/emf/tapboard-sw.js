@@ -1,5 +1,5 @@
 {% load static %}
-const VERSION = "v2";
+const VERSION = "v3";
 
 const CACHE_NAME = `tapboard-${VERSION}`;
 
@@ -12,7 +12,6 @@ const APP_STATIC_RESOURCES = [
     "{% static "emf/fonts/raleway-regular-webfont.woff2" %}",
     "{% static "emf/fonts/raleway-semibold-webfont.woff" %}",
     "{% static "emf/fonts/raleway-semibold-webfont.woff2" %}",
-    "{% static "emf/img/tapboard-icon-512x512.png" %}",
     "{% static "emf/tapboard-manifest.json" %}",
     "{% static "emf/img/tapboard-menu-icon-white.svg" %}",
     "{% static "emf/img/tapboard-not-connected.svg" %}",

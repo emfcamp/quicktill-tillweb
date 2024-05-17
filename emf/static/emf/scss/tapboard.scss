@@ -111,6 +111,12 @@ header {
     height: 50px;
 }
 
+#run div header {
+    position: absolute;
+    left: 15px;
+    top: 0px;
+}
+
 h1 {
     font-size: 30pt;
 }
@@ -155,12 +161,6 @@ div.caution {
     width: 30px;
     height: 30px;
     vertical-align: bottom;
-}
-
-#icon {
-    position: absolute;
-    top: 5px;
-    left: 5px;
 }
 
 #menubutton {
@@ -214,15 +214,15 @@ div.caution {
 }
 
 #product {
-	font-weight: 600;
-	font-size: 32pt;
+    font-weight: 600;
+    font-size: 32pt;
 }
 
 #run p {
-	margin: .5em 0;
+    margin: .2em 0;
 }
 
 #linenode {
-	background-color: $foreground;
-	columns: $background;
+    background-color: $foreground;
+    columns: $background;
 }

@@ -13,7 +13,6 @@
     <script src="{% static "emf/js/tapboard.js" %}" defer></script>
   </head>
   <body>
-    <!-- <div id="icon"><img src="{% static "emf/img/tapboard-icon-512x512.png" %}" alt="" width="64" height="64"></div> -->
     <button id="menubutton" onclick="setup_mode()"><img src="{% static "emf/img/tapboard-menu-icon-white.svg" %}" alt=""></button>
     <div id="setup" class="d-none">
       <header><h1>EMF Tap Board Setup</h1></header>
@@ -50,7 +49,7 @@
 	<header><h1 id="linename"></h1></header>
 	<div class="mb-1 flex-grow-1"><!-- spacer --></div>
 	<div id="logo">
-	  <img src="{% static "emf/img/unknown-brand.png" %}" alt="">
+	  <img src="{% static "emf/img/tapboard-not-connected.svg" %}" alt="">
 	</div>
 	<div class="d-none" id="tastingNotesContainer">
 	  <div class="center mb-1" id="tastingNotes"></div>
@@ -98,6 +97,9 @@
 	</div>
       </div>
     </div>
+    <template id="idleLogo">
+      <img src="{% static "emf/img/unknown-brand.png" %}" alt="">
+    </template>
   </body>
   <script>
     if ("serviceWorker" in navigator) {

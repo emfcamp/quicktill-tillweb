@@ -23,6 +23,8 @@ const notePassword = document.getElementById("notePassword");
 const notConnectedLogo = logo.innerHTML;
 const notConnectedStatus = status.innerText;
 
+const idleLogo = document.getElementById("idleLogo").innerHTML;
+
 const recoverTime = 5000; /* How long to wait after network error? */
 
 /* Local storage keys */
@@ -116,7 +118,7 @@ function process_message(message) {
 	if (m.stockitem === null) {
 	    /* There's nothing connected to the line right now */
 	    show_logo();
-	    updateHTML(logo, notConnectedLogo);
+	    updateHTML(logo, idleLogo);
 	    updateHTML(tastingNotes, "");
 	    updateText(product, "");
 	    updateText(price, "");
