@@ -4,11 +4,12 @@
 {% block jquery %}
 <script>
   const websocket_address = "{{websocket_address}}";
+  const sl_location = "{{location}}";
 </script>
 <script src="{% static "emf/js/cellarboard.js" %}" defer></script>
 {% endblock %}
 {% block heading %}
-<h1>Cellar status</h1>
+<h1>{{location}} Cellar status</h1>
 {% endblock %}
 
 {% block content %}

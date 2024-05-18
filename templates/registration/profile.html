@@ -35,7 +35,10 @@
 	  <a class="nav-link" href="{% url "refusals" %}">Refusals log</a>
 	</li>
 	<li class="nav-item">
-	  <a class="nav-link" href="{% url "cellarboard" %}">Cellar status board</a>
+	  <a class="nav-link" href="{% url "cellarboard" location="Bar"%}">Main bar cellar status</a>
+	</li>
+	<li class="nav-item">
+	  <a class="nav-link" href="{% url "cellarboard" location="Null Sector"%}">Null Sector cellar status</a>
 	</li>
 	{% if may_edit_users %}
 	<li class="nav-item">

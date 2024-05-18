@@ -292,9 +292,10 @@ def tapboard_sw(request):
     return response
 
 
-def cellarboard(request):
+def cellarboard(request, location):
     return render(request, "emf/cellarboard.html", context={
         "websocket_address": websocket_address(request),
+        "location": location,
     })
 
 

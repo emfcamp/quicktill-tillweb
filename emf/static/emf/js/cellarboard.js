@@ -4,7 +4,7 @@ let socket = null;
 let subscriptions = null;
 
 async function setup() {
-    const response = await fetch("/api/stocklines.json?type=regular&location=Bar&location=Cybar");
+    const response = await fetch(`/api/stocklines.json?type=regular&location=${sl_location}`);
     const stocklines = await response.json();
 
     const rows = stocklines.stocklines.map((x) => {
