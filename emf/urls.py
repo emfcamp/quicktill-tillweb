@@ -19,9 +19,11 @@ urls = [
     path('tapboard/', views.tapboard, name="tapboard"),
     path('tapboard/sw.js', views.tapboard_sw, name="tapboard-sw"),
 
-    path('cellarboard/', views.cellarboard, kwargs={'location': 'Bar'},
-         name="cellarboard"),
+    path('cellarboard/', views.cellarboard, kwargs={'location': 'Bar'}),
     path('cellarboard/<location>/', views.cellarboard, name="cellarboard"),
+
+    path('barboard/', views.barboard, kwargs={'location': 'Bar'}),
+    path('barboard/<location>/', views.barboard, name="barboard"),
 
     path('jontyfacts/', views.jontyfacts, name="jontyfacts"),
 

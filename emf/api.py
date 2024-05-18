@@ -118,6 +118,8 @@ def stocklines(request):
         if 'location' in request.GET:
             q = q.filter(StockLine.location.in_(
                 request.GET.getlist('location')))
+        if 'startswith' in request.GET:
+            q = q.filter(StockLine.name.ilike(request.GET['startswith'] + '%'))
         stocklines = q.all()
 
         return JsonResponse({

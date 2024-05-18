@@ -299,6 +299,13 @@ def cellarboard(request, location):
     })
 
 
+def barboard(request, location):
+    return render(request, "emf/barboard.html", context={
+        "websocket_address": websocket_address(request),
+        "location": location,
+    })
+
+
 def jontyfacts(request):
     from quicktill.models import StockItem, StockType, Unit, StockOut, User
     with tillsession() as s:
