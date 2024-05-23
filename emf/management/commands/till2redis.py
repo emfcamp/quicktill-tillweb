@@ -15,13 +15,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from decimal import Decimal
 from quicktill import event, listen, td
 from quicktill.models import StockLine, StockType, StockItem, \
-    Unit, StockOut
+    Unit, StockOut, Transline
 from emf.api_objects import \
     stockline_to_dict, stocktype_to_dict, stockitem_to_dict
 
 rcon = None
 json = DjangoJSONEncoder(indent=2)
-
+mainloop = None
 
 qcounter_enabled = False
 show_queries = False
@@ -78,6 +78,19 @@ def publish_totals_by_unit():
         'units': {
             unit.description: (qty / unit.base_units_per_sale_unit).quantize(
                 Decimal("0.1")) for unit, qty in units},
+    })
+
+
+def publish_cup_reuse_count():
+    # Must be called with an ORM session in progress
+    re_used = td.s.query(func.sum(Transline.items))\
+        .filter(Transline.dept_id == 100)\
+        .scalar() or 0
+
+    publish({
+        'type': "cups re-used",
+        'key': 'totals/cups-re-used',
+        'count': -re_used,
     })
 
 
@@ -160,6 +173,13 @@ def notify_stockitem_change(id_str):
             publish_totals_by_unit()
 
 
+def background_minute():
+    mainloop.add_timeout(60.0, background_minute)
+    print("Minute event")
+    with td.orm_session():
+        publish_cup_reuse_count()
+
+
 class Command(BaseCommand):
     help = 'Forward events from the till database to redis'
 
@@ -178,7 +198,7 @@ class Command(BaseCommand):
             help="Port to use to access redis")
 
     def handle(self, *args, **options):
-        global qcounter_enabled, show_queries, rcon
+        global qcounter_enabled, show_queries, rcon, mainloop
         qcounter_enabled = options["count_queries"] or options["show_queries"]
         show_queries = options["show_queries"]
 
@@ -220,6 +240,8 @@ class Command(BaseCommand):
                     publish(stockitem_to_dict(si))
 
                 publish_totals_by_unit()
+
+        background_minute()
 
         # Notify systemd that startup is complete
         sdnotify.SystemdNotifier().notify("READY=1")
