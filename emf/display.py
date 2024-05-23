@@ -157,7 +157,7 @@ class SoftDrinks(Display):
     def __init__(self, s):
         soft = s.query(
             StockType, StockType.remaining / StockType.total * 100.0)\
-                .filter(StockType.dept_id == 70)\
+                .filter(StockType.dept_id.in_([70, 72]))\
                 .filter(StockType.remaining > 0.0)\
                 .options(undefer('remaining'))\
                 .order_by(StockType.manufacturer, StockType.name)\
