@@ -72,6 +72,10 @@ body {
     }
 
     #page {
+	position: absolute;
+	left: 30px;
+	right: 30px;
+	bottom: 30px;
 	flex: 1;
 	text-align: center;
 
@@ -84,7 +88,7 @@ body {
 	    margin-left: .5em;
 	    height: .25em;
 
-	    transition: background-color .25s;
+	    transition: background-color 2s;
 
 	    &:first-child {
 		margin-left: 0;
@@ -119,8 +123,9 @@ body {
     }
 }
 
+/* This is intended to be used when a table has too many rows to fit on the display */
 .smaller {
-    max-width: 40em;
+    font-size: 15pt;
 }
 
 #title, #content, #page {
