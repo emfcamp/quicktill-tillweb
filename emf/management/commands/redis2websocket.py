@@ -12,7 +12,7 @@ import websockets
 import json
 import redis.asyncio as redis
 import sdnotify
-import re
+# import re
 
 nke = "notify-keyspace-events"
 
