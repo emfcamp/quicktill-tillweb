@@ -20,7 +20,7 @@ django-widget-tweaks = "~1.5"
 psycopg2 = "~2.9"
 odfpy = "~1.4"
 sqlalchemy = "~1.4"
-quicktill = { git = "https://github.com/sde1000/quicktill.git", rev = "c2791b023ed99c3aaca0882d11bbb3e7e75e19da" }
+quicktill = { git = "https://github.com/sde1000/quicktill.git", rev = "cc6a4faf495b9f79b9766ef09777c5c0fb2ef3b9" }
 sorl-thumbnail = "^12.8"
 django-photologue = "^3"
 markdown = "^3.5"
@@ -30,6 +30,7 @@ redis = "^5"
 sdnotify = "^0.3"
 websockets = "^12.0"
 django-sass = "^1.1.0"
+gmqtt = "^0.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
