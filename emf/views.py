@@ -31,7 +31,8 @@ def current_time():
 def websocket_address(request):
     if settings.DEBUG:
         return "ws://localhost:8001/"
-    return f"wss://{request.META['HTTP_HOST']}/websocket/"
+    scheme = "ws" if request.META['HTTP_HOST'][0].isdigit() else "wss"
+    return f"{scheme}://{request.META['HTTP_HOST']}/websocket/"
 
 
 class EventInfo:
