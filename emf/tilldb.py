@@ -65,7 +65,7 @@ def booziness(s):
     # Amount of alcohol in stock item in ml.  The unit ID we're not listing
     # here is 'ml' which is size 1ml
     unit_alcohol = case([
-        (Unit.name == 'pt', 568.0),
+        (Unit.name == 'pint', 568.0),
         (Unit.name == '25ml', 25.0),
         (Unit.name == '50ml', 50.0),
         (Unit.name == 'can', 350.0),
