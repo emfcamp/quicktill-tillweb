@@ -168,6 +168,23 @@ class SoftDrinks(Display):
             context={'soft': soft})
 
 
+class Snacks(Display):
+    description = "Snacks"
+
+    def __init__(self, s):
+        snacks = s.query(
+            StockType, StockType.remaining / StockType.total * 100.0)\
+                .filter(StockType.dept_id == 50)\
+                .filter(StockType.remaining > 0.0)\
+                .options(undefer('remaining'))\
+                .order_by(StockType.manufacturer, StockType.name)\
+                .all()
+
+        self.text = render_to_string(
+            'emf/display-snacks.html',
+            context={'snacks': snacks})
+
+
 class Progress(Display):
     description = "Event progress"
 
