@@ -71,9 +71,7 @@ function run() {
     });
     socket.addEventListener("close", (event) => {
 	socket = null;
-	if (running) {
-	    setTimeout(run, 5000);
-	}
+	setTimeout(run, 5000);
     });
 }
     
