@@ -1,5 +1,5 @@
 {% load static %}
-const VERSION = "v3";
+const VERSION = "v4";
 
 const CACHE_NAME = `tapboard-${VERSION}`;
 
