@@ -96,7 +96,7 @@ dtf = "Y-m-d H:i"
 def refusals(request):
     with tillsession() as s:
         r = s.query(RefusalsLog)\
-             .options(joinedload('user'))\
+             .options(joinedload(RefusalsLog.user))\
              .order_by(RefusalsLog.id)\
              .all()
         return render(
@@ -266,7 +266,7 @@ def pricelist(request):
                            StockType.remaining / StockType.total * 100.0)\
             .join(Unit)\
             .join(Department)\
-            .options(undefer('remaining'))\
+            .options(undefer(StockType.remaining))\
             .order_by(Department.id, StockType.manufacturer, StockType.name)\
             .filter(StockType.remaining > 0.0)\
             .all()

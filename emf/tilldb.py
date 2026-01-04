@@ -10,8 +10,8 @@ from decimal import Decimal
 # Monkeypatch the StockType class to have a "total" column so we can
 # easily read total amounts of stuff ordered
 StockType.total = column_property(
-    select([func.coalesce(func.sum(StockItem.size), text("0.0"))],
-           and_(StockItem.stocktype_id == StockType.id,
+    select(func.coalesce(func.sum(StockItem.size), text("0.0")))
+    .where(and_(StockItem.stocktype_id == StockType.id,
                 Delivery.id == StockItem.deliveryid,
                 Delivery.checked == True))  # noqa E712
     .correlate(StockType.__table__)
@@ -25,16 +25,16 @@ StockType.total = column_property(
 # version that ignores whether stock is on sale.
 StockType.total_remaining = column_property(
     select(
-        [func.coalesce(
+        func.coalesce(
             func.sum(
                 StockItem.size - select(
-                    [func.coalesce(func.sum(StockOut.qty), text("0.0"))],
-                    StockOut.stockid == StockItem.id,
-                ).as_scalar()),
-            text("0.0"))],
-        and_(StockItem.stocktype_id == StockType.id,
-             StockItem.finished == None,  # noqa E711
-             StockItem.checked == True))  # noqa E712
+                    func.coalesce(func.sum(StockOut.qty), text("0.0")))
+                .where(StockOut.stockid == StockItem.id)
+                .as_scalar()),
+            text("0.0")))
+    .where(and_(StockItem.stocktype_id == StockType.id,
+                StockItem.finished == None,  # noqa E711
+                StockItem.checked == True))  # noqa E712
     .correlate(StockType.__table__)
     .label('total_remaining'),
     deferred=True,
@@ -59,18 +59,18 @@ def booziness(s):
     and total amount of alcohol as Decimal, and percentage used as float
     """
 
-    used_fraction = case([(StockItem.finished != None, 1.0)],  # noqa E711
+    used_fraction = case((StockItem.finished != None, 1.0),  # noqa E711
                          else_=StockItem.used / StockItem.size)
 
     # Amount of alcohol in stock item in ml.  The unit ID we're not listing
     # here is 'ml' which is size 1ml
-    unit_alcohol = case([
+    unit_alcohol = case(
         (Unit.name == 'pint', 568.0),
         (Unit.name == '25ml', 25.0),
         (Unit.name == '50ml', 50.0),
         (Unit.name == 'can', 350.0),
         (Unit.name == 'bottle', 330.0),
-    ], else_=1.0) * StockItem.size * StockType.abv / 100.0
+        else_=1.0) * StockItem.size * StockType.abv / 100.0
 
     used, total = s.query(
         func.coalesce(func.sum(used_fraction * unit_alcohol), Decimal("0.0")),
@@ -87,12 +87,12 @@ def booziness(s):
 def on_tap(s, location="Bar"):
     # Used in display_on_tap and frontpage
     base = s.query(StockItem, StockItem.remaining / StockItem.size)\
-            .join('stocktype')\
-            .join('stockline')\
+            .join(StockItem.stocktype)\
+            .join(StockItem.stockline)\
             .filter(StockLine.location == location)\
             .order_by(StockType.manufacturer, StockType.name)\
-            .options(undefer('remaining'))\
-            .options(contains_eager('stocktype'))
+            .options(undefer(StockItem.remaining))\
+            .options(contains_eager(StockItem.stocktype))
 
     ales = base.filter(StockType.dept_id == 10).all()
 

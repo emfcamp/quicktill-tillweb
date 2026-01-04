@@ -31,7 +31,7 @@ def userprofile(request):
 
     with tillsession() as s:
         tilluser = s.query(TillUser)\
-                    .options(joinedload('permissions'))\
+                    .options(joinedload(TillUser.permissions))\
                     .filter(TillUser.webuser == request.user.username)\
                     .one_or_none()
 
@@ -44,7 +44,7 @@ def userprofile(request):
         if request.method == "POST" \
            and "submit_tillusersetup" in request.POST \
            and "tilluser" in request.POST:
-            manager = s.query(TillGroup).get("manager")
+            manager = s.get(TillGroup, "manager")
             if not manager:
                 messages.error(
                     request,
@@ -54,7 +54,7 @@ def userprofile(request):
                 tilluser.webuser = None
                 s.commit()
             if request.POST["tilluser"]:
-                newuser = s.query(TillUser).get(int(request.POST["tilluser"]))
+                newuser = s.get(TillUser, int(request.POST["tilluser"]))
             else:
                 newuser = TillUser(fullname=request.user.get_full_name(),
                                    shortname=request.user.get_full_name(),
