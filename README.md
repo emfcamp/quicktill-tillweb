@@ -1,6 +1,8 @@
 EMF Till web service
 ====================
 
+**NO LONGER MAINTAINED: use the [emftillweb](https://github.com/emfcamp/emftillweb/) repository instead**
+
 Infrastructure needed to bring up an instance of `quicktill.tillweb`,
 plus the public-facing web pages for https://bar.emf.camp/
 
